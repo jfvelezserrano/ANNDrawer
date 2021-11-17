@@ -1,0 +1,22 @@
+Cambiar iconos (disco...)
+
+Cambiar pantalla de texto (flotante, movible, mas simple)
+
+Añadir nuevas configuraciones
+
+Revisar fuentes
+
+Revisar uniones
+
+Rotar en 3D con el ratón
+
+Zoom con el ratón
+
+Seguridad del código escrito en la ventana
+
+Flechas en las líneas
+
+Líneas curvas, cuadradas o rectas en los shortcuts
+
+Nodo como bloque o desplegado
+

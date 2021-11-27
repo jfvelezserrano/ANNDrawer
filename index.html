@@ -252,6 +252,7 @@
                                     type="text" value="30" min="-360" max="360">
                                 <div id="increment17" class="input-number-increment">+</div>
 
+
                             </div>
                             <br>
                             <div>
@@ -467,15 +468,86 @@
     <!-- menu-container -->
 
     <!-- EDITOR WINDOW -->
-    <div class="paper">
-        <div class="paper-content">
-            <textarea id="editor" class="CodeMirror" autofocus></textarea>
+    <div id="box" class="box">
+        <div class="paper" id="paper" onclick="movilityTerminal();">
+            <div class="paper-content">
+                <textarea id="editor" class="CodeMirror" autofocus></textarea>
+            </div>
         </div>
     </div>
     <!-- PREVIEW WINDOW -->
     <div class="preview">
 
         <div class="preview-container">
+            <div id="cuadro" class="cuadro" onclick="movilityDot();">  
+                    
+                        <div class="part1"><span>
+
+                            <input type="image" class="incrementRotationX" src="images/flecha_arriba.png" height="10px" width="5px"   id="incrementRotationX" />
+                            
+                                
+
+                        </span></div>
+                        <div class="part2"><span>
+                            <input type="image" src="images/flecha_izquierda.png" height="10px" width="5px"  id="incrementRotationY" />
+                        </span></div>
+                    
+                        <div class="part3"><span>
+                            <input type="image" src="images/flecha_derecha.png" height="10px" width="5px"  id="decrementRotationY" />
+                        </span></div>
+                        <div class="part4">
+                            <span>
+
+                                <input type="image" src="images/flecha_abajo.png" height="10px" width="5px"  id="decrementRotationX" />
+                                                    </span></div>
+            
+            </div>
+
+
+
+
+            <SCRIPT type="text/javascript">
+                var el = document.getElementById("cuadro");
+                //if (el.addEventListener){
+                  
+                    el.addEventListener("mousedown", ratonPulsado, false);
+                    el.addEventListener("mouseup", ratonSoltado, false);
+                    document.addEventListener("mousemove", ratonMovido, false);
+                //} else { //Para IE
+                //    el.attachEvent('onmousedown', ratonPulsado);
+                //    el.attachEvent('onmouseup', ratonSoltado);
+                //    document.attachEvent('onmousemove', ratonMovido);
+                //}    
+                
+                var terminal = document.getElementById("paper");
+                //if (el.addEventListener){
+                  
+                    terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
+                    terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
+                    document.addEventListener("mousemove", ratonMovidoTerminal, false);
+
+
+
+                    const box = document.getElementById('box')
+
+                    box.addEventListener('click', init, false)
+                    $("#preview-container").mousedown(function(ev){
+                    if(ev.which == 3)
+                    {
+                            alert("Right mouse button clicked on element with id myId");
+                    }
+                    });
+                    window.oncontextmenu = function ()
+                        {
+                            showCustomMenu();
+                            return false;     // cancel default menu
+                        }
+
+
+            </SCRIPT>  
+
+
+
 
             <div id="preview">
                 <div id="svg">
@@ -489,3 +561,5 @@
 </body>
 
 </html>
+
+

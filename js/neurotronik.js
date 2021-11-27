@@ -93,8 +93,9 @@ function initializeDrawSettings() {
 Function that represents the neural network in the preview with the 
 configurable data collected from the menu
 */
-function updatePreview(content) {
+function updatePreview(content,zoom) {
     try {
+        var start = Date.now()
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
@@ -115,11 +116,14 @@ function updatePreview(content) {
                 initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
                     x: 0, // the top-left corner X coordinate
                     y: 0, // the top-left corner Y coordinate
-                    width: 1000, // the width of the viewBox
+                    width: 1000 , // the width of the viewBox
                     height: 1000 // the height of the viewBox
                 },
             }
         );
+        svg.zoomIn()
+        svg.zoomIn()
+        svg.zoomIn()
     } catch (error) {
         handleErrors(error);
         //With errors, the preview frame is colored red
@@ -128,6 +132,9 @@ function updatePreview(content) {
         $('#svg').css('font-size', "30px");
         $('#preview').css('border', '2px solid #ce0f0f');
     }
+    var end = Date.now();
+    console.log(end - start);
+    
 }
 
 function handleErrors(error) {
@@ -1008,6 +1015,10 @@ class RotationMatrixX {
         this.initializeMatrix(alfa);
     }
     initializeMatrix(alfa) {
+
+        //const matrix = math.matrix([[1, 0, 0], [0, Math.cos(alfa * (Math.PI / 180)),Math.sin(alfa * (Math.PI / 180))],[0,-(Math.sin(alfa * (Math.PI / 180))),Math.cos(alfa * (Math.PI / 180))]])
+
+
         this.matrix = (function(dims) {
             return allocate(dims);
         })([3, 3]);
@@ -1036,6 +1047,11 @@ class RotationMatrixY {
         this.initializeMatrix(alfa);
     }
     initializeMatrix(alfa) {
+
+        //const matrix = math.matrix([[Math.cos(alfa * (Math.PI / 180)), 0, -(Math.sin(alfa * (Math.PI / 180)))], [0, 1, 0],[Math.sin(alfa * (Math.PI / 180)), 0,Math.cos(alfa * (Math.PI / 180))]])
+
+
+
         this.matrix = (function(dims) {
             return allocate(dims);
         })([3, 3]);
@@ -1064,6 +1080,9 @@ class RotationMatrixZ {
         this.initializeMatrix(alfa);
     }
     initializeMatrix(alfa) {
+
+        //const matrix = math.matrix([[Math.cos(alfa * (Math.PI / 180)), Math.sin(alfa * (Math.PI / 180)), 0], [-(Math.sin(alfa * (Math.PI / 180))), Math.cos(alfa * (Math.PI / 180)), 0],[ 0, 0, 1]])
+
         this.matrix = (function(dims) {
             return allocate(dims);
         })([3, 3]);
@@ -1153,6 +1172,7 @@ class MatrixController {
         coordinates[10] = new Coordinate(c10[0][0], c10[1][0], c10[2][0]);
     }
     multiply(a, b) {
+        console.time('multiply')
         var c = (function(dims) {
             return allocate(dims);
         })([a.length, b[0].length]);
@@ -1163,6 +1183,8 @@ class MatrixController {
                 }
             }
         }
+        console.timeEnd('multiply')
+        
         return c;
     }
 }

@@ -103,6 +103,19 @@ function loadInputs() {
     $('#decrement14').on('mousedown mouseup mouseleave', e => {
         holdClickDec(e, 14);
     });
+    $('#incrementRotationX').on('mousedown mouseup mouseleave', e => {
+        holdClickInc(e, 17);
+    });
+    $('#decrementRotationX').on('mousedown mouseup mouseleave', e => {
+        holdClickDec(e, 17);
+    });
+    $('#incrementRotationY').on('mousedown mouseup mouseleave', e => {
+        holdClickDec(e, 18);
+    });
+    $('#decrementRotationY').on('mousedown mouseup mouseleave', e => {
+        holdClickInc(e, 18);
+    });
+    
     /*Open file*/
     openFile();
 }
@@ -142,6 +155,8 @@ function holdClickInc(e, number) {
 function loadInput(number, max, min) {
     var input = document.getElementById('input' + number);
     input.addEventListener('change', function () {
+
+
         if (input.value < min) {
             input.value = min;
         }
@@ -149,6 +164,7 @@ function loadInput(number, max, min) {
             input.value = max;
         }
         $('#input' + number).val(input.value);
+        let asdf= cm.getValue();
         updatePreview(cm.getValue());
     });
 }
@@ -302,7 +318,7 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     }
-    updatePreview(cm.getValue());
+    updatePreview(cm.getValue(),zoom);
 }
 
 /**
@@ -353,6 +369,7 @@ function increment(number) {
             $('#input' + number).val(1);
         }
     }
+    
     updatePreview(cm.getValue());
 }
 
@@ -424,6 +441,7 @@ function toggleButton() {
 }
 
 function zoomIn() {
+    zoom += 100;
     svg.zoomIn();
 }
 
@@ -579,6 +597,9 @@ document.onkeyup = function (e) {
     }
 }
 
+
+
+
 /**
  * Puts the preview in full screen. 
  * In the case that it is in full screen, it returns to its original size
@@ -641,3 +662,188 @@ window.onbeforeunload = function (e) {
 function stop() {
     clearTimeout(timeout);
 }
+
+
+
+
+    function movilityDot()
+
+    {
+        var el = document.getElementById("cuadro");    
+        el.addEventListener("mousedown", ratonPulsado, false);
+        el.addEventListener("mouseup", ratonSoltado, false);
+        document.addEventListener("mousemove", ratonMovido, false);
+
+    }
+
+
+    function movilityTerminal()
+
+    {
+        var el = document.getElementById("paper");
+    
+        el.addEventListener("mousedown", ratonPulsadoTerminal, false);
+        el.addEventListener("mouseup", ratonSoltadoTerminal, false);
+        document.addEventListener("mousemove", ratonMovidoTerminal, false);
+
+    }
+
+    var xInic, yInic;
+    var estaPulsado = false;
+
+    var xInicTerminal, yInicTerminal;
+    var estaPulsadoTerminal = false;
+            
+
+
+    function ratonPulsado(evt) { 
+        //Obtener la posición de inicio
+        xInic = evt.clientX;
+        yInic = evt.clientY;    
+        estaPulsado = true;
+
+        //Para Internet Explorer: Contenido no seleccionable
+        document.getElementById("cuadro").unselectable = true;
+    }
+
+    function ratonPulsadoTerminal(evt) { 
+        //Obtener la posición de inicio
+        xInicTerminal = evt.clientX;
+        yInicTerminal = evt.clientY;    
+        estaPulsadoTerminal = true;
+        //Para Internet Explorer: Contenido no seleccionable
+        document.getElementById("paper").unselectable = true;
+    }
+
+   
+    
+    function ratonMovido(evt) {
+        if(estaPulsado) {
+            //Calcular la diferencia de posición
+            var xActual = evt.clientX;
+            var yActual = evt.clientY;    
+            var xInc = xActual-xInic;
+            var yInc = yActual-yInic;
+            xInic = xActual;
+            yInic = yActual;
+
+
+            //if (xActual)
+            
+            //Establecer la nueva posición
+            var elemento = document.getElementById("cuadro");
+        
+            var position = getPosicion(elemento);
+            document.getElementById("cuadro").style.top = (position[0] + yInc) + "px";
+            document.getElementById("cuadro").style.left = (position[1] + xInc) + "px";
+            
+        }
+    }
+
+    function ratonMovidoTerminal(evt) {
+        if(estaPulsadoTerminal) {
+            //Calcular la diferencia de posición
+            var xActualTerminal = evt.clientX;
+            var yActualTerminal = evt.clientY;    
+            var xIncTerminal = xActualTerminal-xInicTerminal;
+            var yIncTerminal = yActualTerminal-yInicTerminal;
+            xInicTerminal = xActualTerminal;
+            yInicTerminal = yActualTerminal;
+            
+            //Establecer la nueva posición
+            var elementoTerminal = document.getElementById("paper");
+
+            var positionTerminal = getPosicion(elementoTerminal);
+            var resize = evaluateAutoResizing(positionTerminal[0],positionTerminal[1])
+            
+
+            //Es necesario limitar la posicion de X e Y del ratón para ajustar a la ventana
+            let posicionfinalX = positionTerminal[0] + yIncTerminal
+            let posicionfinalY = positionTerminal[1] + xIncTerminal
+            
+            //La posición entonces ya ha sido ajustada
+            if (!resize){
+                document.getElementById("paper").style.top = (posicionfinalX) + "px";
+                document.getElementById("paper").style.left = (posicionfinalY) + "px";
+                
+            }
+        }
+    }
+
+
+    function loadInputColor(number, css) {
+        var body = document.querySelector('body');
+        var input = document.getElementById('input' + number);
+        input.addEventListener('change', function () {
+            body.style.setProperty(css, input.value);
+            $('#input' + number).val(input.value);
+            updatePreview(cm.getValue());
+        });
+    }
+
+    function evaluateAutoResizing(top,left) {
+
+        var widthWindow = window.innerWidth;
+        var heightWindow = window.innerHeight;
+
+        var limitBottom = heightWindow - 150
+        var limitRight = widthWindow - 400
+        if (top>limitBottom){resizeBottom(heightWindow); return true}
+        if (left>limitRight){resizeRight(widthWindow,heightWindow); return true}
+        return false
+
+    }
+    
+    function resizeBottom(height) {
+        let finalHeight = height - 300
+        document.getElementById("paper").style.top = (finalHeight) + "px";
+        document.getElementById("paper").style.left = "0px";
+        document.getElementById("paper").style.width = "100%";
+        document.getElementById("paper").style.height = "300px";
+        ratonSoltadoTerminal()
+    }
+    
+    function resizeRight(width,height) {
+        let finalWidth = width - 400
+        
+        
+        
+
+        document.getElementById("paper").style.top = "0px";
+        document.getElementById("paper").style.left = (finalWidth) + "px";
+        document.getElementById("paper").style.width = "400px";
+        document.getElementById("paper").style.height = height + "px";
+        ratonSoltadoTerminal()
+        
+    }
+
+    function ratonSoltado(evt) {
+        estaPulsado = false;
+        
+    }
+
+    function ratonSoltadoTerminal(evt) {
+        estaPulsadoTerminal = false;
+        
+    }
+    
+
+    function getPosicion(elemento) {
+    var posicion = new Array(2);
+                if(document.defaultView && document.defaultView.getComputedStyle) {
+                    posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
+                    posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
+                } else {
+                    //Para Internet Explorer
+                    posicion[0] = parseInt(elemento.currentStyle.top);             
+                    posicion[1] = parseInt(elemento.currentStyle.left);               
+                }      
+                return posicion;
+    }
+
+
+
+
+
+  
+

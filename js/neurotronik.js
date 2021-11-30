@@ -1,3 +1,5 @@
+
+
 /*Global variables*/
 var cm;
 var svgCode = "";
@@ -7,6 +9,15 @@ var x_min;
 var y_max;
 var y_min;
 var indexShortcuts=0;
+var zoomCounter = 0
+var ZoomOptions = {
+    initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
+        x: 0, // the top-left corner X coordinate
+        y: 0, // the top-left corner Y coordinate
+        width: 1000 , // the width of the viewBox
+        height: 1000 // the height of the viewBox
+    },
+}
 
 /*Update preview in init*/
 $(function() {
@@ -20,7 +31,7 @@ $(function() {
     init(0);
     //Detect a change in the editor
     cm.on('change', function() {
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
 });
 
@@ -68,7 +79,7 @@ function initializeDrawSettings() {
     let layersDistance = $('#input21').val();
     let parentsDistance = $('#input22').val();
     settings += 'var shift = new Shift(' + nodesDistance + ',' + layersDistance + ',' + parentsDistance + ');\n';
-    settings += 'var viewBox = new ViewBox(3000,2000,0);\n';
+    settings += 'var viewBox = new ViewBox(3000,2000,-100);\n';
 
     let cubeDimensions = ($('input:radio[name=cubedimensions]:checked').val() == 'true');
     let kernelDimensions = ($('input:radio[name=kerneldimensions]:checked').val() == 'true');
@@ -84,7 +95,7 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(3000, 2000, 0)
+    let viewBox = new ViewBox(3000, 2000, -100)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
@@ -93,16 +104,23 @@ function initializeDrawSettings() {
 Function that represents the neural network in the preview with the 
 configurable data collected from the menu
 */
-function updatePreview(content,zoom) {
+function updatePreview(content,zoomCounter) {
     try {
-        var start = Date.now()
+        if(zoomCounter!==0 && zoomCounter!=='undefinded'){
+        this.zoomCounter = zoomCounter
+        }
         let settings = initializeDrawSettings();
+        console.log('Settings: ' +settings)
         if (content.includes('model')) {
             let code = settings + content;
+            console.log('Settings + content: ' , code)
             eval(code);
-            svgCode = svgController.draw(model.getModelTree());
-            $('#svg').html(svgCode);
+            console.log('Settings + content: ' , code)
 
+            svgCode = svgController.draw(model.getModelTree());
+            console.log('Svgcode final: ' + svgCode)
+            $('#svg').html(svgCode);
+            
         } else {
             $('#svg').html(content);
         }
@@ -111,19 +129,12 @@ function updatePreview(content,zoom) {
         $('#svg').css('color', "");
         $('#svg').css('font-size', "");
         $('#preview').css('border', '2px solid #1b6181');
-        svg = $("svg").svgPanZoom(
-            options = {
-                initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
-                    x: 0, // the top-left corner X coordinate
-                    y: 0, // the top-left corner Y coordinate
-                    width: 1000 , // the width of the viewBox
-                    height: 1000 // the height of the viewBox
-                },
-            }
-        );
-        svg.zoomIn()
-        svg.zoomIn()
-        svg.zoomIn()
+        svg = $("svg").svgPanZoom(this.ZoomOptions);
+        svg.animationTime = 0
+        for (i=0;i<zoomCounter;i++){
+            svg.zoomIn()
+        }
+   
     } catch (error) {
         handleErrors(error);
         //With errors, the preview frame is colored red
@@ -132,8 +143,7 @@ function updatePreview(content,zoom) {
         $('#svg').css('font-size', "30px");
         $('#preview').css('border', '2px solid #ce0f0f');
     }
-    var end = Date.now();
-    console.log(end - start);
+    
     
 }
 
@@ -288,7 +298,7 @@ var example = {
  */
 function init(number) {
     cm.setValue(example.data[number]);
-    updatePreview(cm.getValue());
+    updatePreview(cm.getValue(),this.zoomCounter);
 }
 
 /**
@@ -1298,8 +1308,8 @@ class Cube {
         this.coordinates.push(new Coordinate(-(x_aux / 2), y_aux / 2, -(z_aux / 2)));
         this.coordinates.push(new Coordinate(x_aux / 2, y_aux / 2, -(z_aux / 2)));
 
-        let x_random = Math.random() * (this.coordinates[5].getX() - this.coordinates[4].getX()) + this.coordinates[4].getX();
-        let y_random = Math.random() * (this.coordinates[6].getY() - this.coordinates[4].getY()) + this.coordinates[4].getY();
+        let x_random = 0.5*(this.coordinates[5].getX() - this.coordinates[4].getX()) + this.coordinates[4].getX();
+        let y_random = 0.5*(this.coordinates[6].getY() - this.coordinates[4].getY()) + this.coordinates[4].getY();
         this.coordinates.push(new Coordinate(x_random, y_random, this.coordinates[4].getZ()));
 
         //Shortcut CNN
@@ -1744,6 +1754,7 @@ class SvgController {
             if (this.activate) {
                 let kernelCube = modelQueue[i - 1];
                 let vertex = cube.getCoordinates()[8];
+                //let connections = this.createPyramids(kernelCube,vertex)
                 let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
                 this.drawPyramid(pyramid, kernelCube);
                 this.activate = false;
@@ -1824,6 +1835,10 @@ class SvgController {
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '" x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[0].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[0].getY() + cube.getCoordinates()[4].getY()) / 2 + '\'>' + (cube.getZ()) + '</text>\n';
         return svg;
 
+    }
+    createPyramids(kernelCube,vertex){
+        //new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()))
+        //return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
     }
     drawTextPyramid(pyramid, kernel) {
         return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
@@ -1976,8 +1991,8 @@ class SvgController {
         let difX = Math.abs((cube_actual.getCoordinates()[3].getX() - kernel.getCoordinates()[3].getX()));
         let x_random = -difX + (Math.random() * (difX + difX));
         let y_random = -difY + (Math.random() * (difY + difY));
-        this.matrixController.move('x', kernel.getCoordinates(), x_random);
-        this.matrixController.move('y', kernel.getCoordinates(), y_random);
+        //this.matrixController.move('x', kernel.getCoordinates(), x_random);
+        //this.matrixController.move('y', kernel.getCoordinates(), y_random);
     }
     calculateAverageZ(coordinates) {
         let total = coordinates.length;

@@ -6,6 +6,8 @@ var svg;
 var timeout;
 var speed = 100;
 var svgCode;
+var zoomCounter = 0
+
 
 /**
  * LOAD PAGE
@@ -50,16 +52,16 @@ function loadInputs() {
         init(example);
     });
     $('input:radio[name=cubedimensions]').change(function () {
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
     $('input:radio[name=kerneldimensions]').change(function () {
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
     $('input:radio[name=widthlogs]').change(function () {
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
     $('input:radio[name=depthlogs]').change(function () {
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
     $('#increment17').on('mousedown mouseup mouseleave', e => {
         holdClickInc(e, 17);
@@ -125,8 +127,8 @@ function loadInputs() {
  * @param {e} e 
  * @param {number} number 
  */
-function holdClickDec(e, number) {
-    if (e.type == "mousedown") {
+function holdClickDec(e, number, pressed) {
+    if (e.type == "mousedown" || pressed) {
         decrement(number);
     } else {
         stop()
@@ -138,7 +140,7 @@ function holdClickDec(e, number) {
  * @param {e} e 
  * @param {number} number 
  */
-function holdClickInc(e, number) {
+function holdClickInc(e, number, pressed) {
     if (e.type == "mousedown") {
         increment(number);
     } else {
@@ -164,8 +166,7 @@ function loadInput(number, max, min) {
             input.value = max;
         }
         $('#input' + number).val(input.value);
-        let asdf= cm.getValue();
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
 }
 
@@ -180,7 +181,7 @@ function loadInputColor(number, css) {
     input.addEventListener('change', function () {
         body.style.setProperty(css, input.value);
         $('#input' + number).val(input.value);
-        updatePreview(cm.getValue());
+        updatePreview(cm.getValue(),this.zoomCounter);
     });
 }
 
@@ -257,7 +258,7 @@ function openFile(){
         fr.onload = function () {
             if (fileValidation()) {
                 cm.setValue(this.result);
-                updatePreview(cm.getValue());
+                updatePreview(cm.getValue(),this.zoomCounter);
             }
         }
         fr.readAsText(this.files[0]);
@@ -304,7 +305,7 @@ function decrement(number) {
         timeout = setTimeout(() => {
             decrement(number);
         }, speed);
-        let result = parseFloat(n1 - 1);
+        let result = parseFloat(n1 - 3);
         if (result > -360) {
             $('#input' + number).val(result.toFixed(0));
         } else {
@@ -318,7 +319,7 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     }
-    updatePreview(cm.getValue(),zoom);
+    updatePreview(cm.getValue(),this.zoomCounter);
 }
 
 /**
@@ -345,7 +346,7 @@ function increment(number) {
         timeout = setTimeout(() => {
             increment(number);
         }, speed);
-        let result = parseFloat(n1 + 1);
+        let result = parseFloat(n1 + 3);
         if (result < 360) {
             $('#input' + number).val(result.toFixed(0));
         } else {
@@ -370,7 +371,7 @@ function increment(number) {
         }
     }
     
-    updatePreview(cm.getValue());
+    updatePreview(cm.getValue(),this.zoomCounter);
 }
 
 /**
@@ -437,20 +438,24 @@ function toggleButton() {
     let i = (fonts.index) % fonts.list.length;
     $('#fontButton').text(fonts.list[i]);
     $('#fontButton').css('font-family', fonts.list[i] + ', sans-serif');
-    updatePreview(cm.getValue());
+    updatePreview(cm.getValue(),this.zoomCounter);
 }
 
 function zoomIn() {
-    zoom += 100;
+    zoomCounter++;
     svg.zoomIn();
+    this.viewBox = svg.getViewBox()
 }
 
 function zoomOut() {
+    zoomCounter--;
     svg.zoomOut();
+    this.viewBox = svg.getViewBox()
 }
 
 function undo() {
-    svg.reset();
+    svg.reset()
+    this.zoomCounter = 0
 }
 
 function reset(...args) {
@@ -498,7 +503,7 @@ function reset(...args) {
         $('#input' + (args[0] + 1)).val(b);
         $('#input' + (args[0] + 2)).val(c);
     }
-    updatePreview(cm.getValue());
+    updatePreview(cm.getValue(),this.zoomCounter);
 }
 
 /**
@@ -595,6 +600,32 @@ document.onkeyup = function (e) {
     if (e.ctrlKey && e.shiftKey && theChar == 'Q') {
         $("#menu-wrapper").click();
     }
+
+
+
+    /*if (e.shiftKey){
+    switch (e.key){
+        case 'ArrowRight':
+            let pressedLeft = false
+            while ( e.key == 'ArrowRight'){
+                pressedLeft = true
+                holdClickDec(e,17,pressedLeft)
+            }
+    }
+}
+
+    if (e.shiftKey  && e.key == 'ArrowLeft') {
+        window.alert('left key')
+    }
+    
+    if (e.shiftKey  && e.key == 'ArrowUp') {
+       // left arrow
+    }
+    if (e.shiftKey  && e.key == 'ArrowDown') {
+       // right arrow
+    }*/
+
+    
 }
 
 
@@ -777,7 +808,7 @@ function stop() {
         input.addEventListener('change', function () {
             body.style.setProperty(css, input.value);
             $('#input' + number).val(input.value);
-            updatePreview(cm.getValue());
+            updatePreview(cm.getValue(),this.zoomCounter);
         });
     }
 

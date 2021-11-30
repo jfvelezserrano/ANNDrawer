@@ -483,7 +483,7 @@
                     
                         <div class="part1"><span>
 
-                            <input type="image" class="incrementRotationX" src="images/flecha_arriba.png" height="10px" width="5px"   id="incrementRotationX" />
+                            <input type="image"  src="images/flecha_arriba.png" height="10px" width="5px"   id="incrementRotationX" />
                             
                                 
 
@@ -508,41 +508,16 @@
 
             <SCRIPT type="text/javascript">
                 var el = document.getElementById("cuadro");
-                //if (el.addEventListener){
                   
                     el.addEventListener("mousedown", ratonPulsado, false);
                     el.addEventListener("mouseup", ratonSoltado, false);
                     document.addEventListener("mousemove", ratonMovido, false);
-                //} else { //Para IE
-                //    el.attachEvent('onmousedown', ratonPulsado);
-                //    el.attachEvent('onmouseup', ratonSoltado);
-                //    document.attachEvent('onmousemove', ratonMovido);
-                //}    
-                
+                  
                 var terminal = document.getElementById("paper");
-                //if (el.addEventListener){
                   
                     terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
                     terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
                     document.addEventListener("mousemove", ratonMovidoTerminal, false);
-
-
-
-                    const box = document.getElementById('box')
-
-                    box.addEventListener('click', init, false)
-                    $("#preview-container").mousedown(function(ev){
-                    if(ev.which == 3)
-                    {
-                            alert("Right mouse button clicked on element with id myId");
-                    }
-                    });
-                    window.oncontextmenu = function ()
-                        {
-                            showCustomMenu();
-                            return false;     // cancel default menu
-                        }
-
 
             </SCRIPT>  
 

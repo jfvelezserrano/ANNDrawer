@@ -26,11 +26,15 @@
 <!-- Body -->
 
 <body>
-    <div id="menu-container">
-        <div class="banner" id="menu-wrapper">
-            <!-- hamburger-menu -->
-            <div title="Open/Close Menu (CTRL+SHIFT+Q)" id="hamburger-menu"><span></span><span></span><span></span></div>
-        </div>
+
+    <div id="preview">
+        <div id="svg"></div>
+    
+    
+    
+        <div id="menu-container">
+
+        
         <!-- menu-wrapper -->
         <nav>
             <ul class="menu-list accordion">
@@ -413,59 +417,14 @@
             </ul>
         </nav>
         <!-- menu-list accordion-->
-        <div class="editorbuttons">
-            <div><a title="Save code as a txt file" onclick="saveCode();" class="icon-button save"><i id="btnsave"
-                        class="fa fa-save"></i><span></span></a>
-            </div>
-            <div class="dropdown">
-                <div title="Change the example (CRTL+SHIFT+H)"class="select" tabindex="1">
-                    <input class="selectopt" name="test" type="radio" id="opt1" value="0" checked>
-                    <label for="opt1" class="option">Basic CNN</label>
-                    <input class="selectopt" name="test" type="radio" id="opt2" value="1">
-                    <label for="opt2" class="option">Basic Siamese</label>
-                    <input class="selectopt" name="test" type="radio" id="opt3" value="2">
-                    <label for="opt3" class="option">Complex Siamese</label>
-                    <input class="selectopt" name="test" type="radio" id="opt4" value="3">
-                    <label for="opt4" class="option">Encoder-Decoder</label>
-                    <input class="selectopt" name="test" type="radio" id="opt5" value="4">
-                    <label for="opt5" class="option">ResNet</label>
-                    <input class="selectopt" name="test" type="radio" id="opt6" value="5">
-                    <label for="opt6" class="option">Recurrent NN</label>
-                </div>
-            </div>
+
         </div>
 
 
-        <div class="zoombuttons">
-
-            <a title="Zoom In (CTRL+SHIFT +)" onclick="zoomIn();" class="icon-button zoom1"><i
-                    class="fa fa-search-plus"></i><span></span></a>
-
-            <a title="Zoom Out (CTRL+SHIFT -)" onclick="zoomOut();" class="icon-button zoom2"><i
-                    class="fa fa-search-minus"></i><span></span></a>
-
-            <a title="Undo (CTRL+SHIFT+BACKSPACE)" onclick="undo();" class="icon-button undo"><i class="fa fa-undo"></i><span></span></a>
-        </div>
-        <div class="viewbuttons">
-            <a title="Save image as a svg file (CTRL+SHIFT+S)" onclick="saveSVG();" class="icon-button save"><i id="btnsave"
-                    class="fa fa-save"></i><span></span></a>
-            <a title="Open file (CTRL+SHIFT+F)" onclick="clickOpen();" id="open" class="icon-button openFile"><i id="btnopen"
-                    class="fa fa-folder-open"></i><span></span></a>
-            <input type="file" name="open" id="openFile">
-            <a title="Expand preview (CTRL+SHIFT+E)" onclick="expandPreview();" class="icon-button expand"><i id="btnexpand"
-                    class="fa fa-expand"></i><span></span></a>
-        </div>
-
-
-
-
-    </div>
-    <div class="title">
-        <a title="Neuropaint - GitHub project" href="https://github.com/Markete17/Neurotronik-Web" target="_blank"><img
-                src="images/title.PNG" alt="Neurotronik Logo" height="60" width="250"></a>
-    </div>
-    <br>
-    <!-- menu-container -->
+    
+    
+    
+    
 
     <!-- EDITOR WINDOW -->
     <div id="box" class="box">
@@ -475,21 +434,20 @@
             </div>
         </div>
     </div>
-    <!-- PREVIEW WINDOW -->
-    <div class="preview">
 
-        <div class="preview-container">
+    <!-- PREVIEW WINDOW -->
+    <div class="preview-container">
             <div id="cuadro" class="cuadro" onclick="movilityDot();">  
-                    
+                            
+                        <div class="part2"><span class="part2-arrow">
+                            <input type="image" src="images/flecha_izquierda.png" height="10px" width="5px"  id="incrementRotationY" />
+                        </span></div>
                         <div class="part1"><span>
 
                             <input type="image"  src="images/flecha_arriba.png" height="10px" width="5px"   id="incrementRotationX" />
                             
                                 
 
-                        </span></div>
-                        <div class="part2"><span>
-                            <input type="image" src="images/flecha_izquierda.png" height="10px" width="5px"  id="incrementRotationY" />
                         </span></div>
                     
                         <div class="part3"><span>
@@ -502,35 +460,113 @@
                                                     </span></div>
             
             </div>
+            
+    </div>
+
+    
+    <div class="menu-examples">
+        <div class="label">EXAMPLES</div>
+        <div class="spacer"></div>
+        <a class="item" onclick="changeModel(1)"><span>Basic CNN</span></a>
+        <a class="item" onclick="changeModel(2)"><span>Basic Siamese</span></a>
+        <a class="item" onclick="changeModel(3)"><span>Complex Siamese</span></a>
+        <a class="item" onclick="changeModel(4)"><span>Encoder-Decoder</span></a>
+        <a class="item" onclick="changeModel(5)"><span>ResNet</span></a>
+        <a class="item" onclick="changeModel(6)" ><span>Recurrent NN</span></a>
+    </div>
+
+    <div class="dark-theme">
+        <input type="checkbox" class="checkbox-theme" id="checkbox-theme">
+        <label for="checkbox-theme" class="label-theme">
+            <i class="fa fa-moon-o"></i>
+            <i class='fa fa-sun-o'></i>
+            <div class='ball'></div>
+        </label>
 
 
+  
+    </div>
 
 
-            <SCRIPT type="text/javascript">
-                var el = document.getElementById("cuadro");
-                  
-                    el.addEventListener("mousedown", ratonPulsado, false);
-                    el.addEventListener("mouseup", ratonSoltado, false);
-                    document.addEventListener("mousemove", ratonMovido, false);
-                  
-                var terminal = document.getElementById("paper");
-                  
-                    terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
-                    terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
-                    document.addEventListener("mousemove", ratonMovidoTerminal, false);
+    <div class="big-menu">
+          <button class="big-menu-button" id="big-menu-button" onclick="this.classList.toggle('opened');this.setAttribute('aria-expanded', this.classList.contains('opened'))" aria-label="Main Menu">
+            <svg width="100" height="100" viewBox="0 0 1 1">
+              <path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+              <path class="line line2" d="M 20,50 H 80" />
+              <path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+            </svg>
+          </button>
+    </div>
 
-            </SCRIPT>  
+    <div class="banner" id="menu-wrapper">
+        <div title="Open/Close Menu (CTRL+SHIFT+Q)" id="hamburger-menu"><i clas="fas fa-bars"></i><span></span><span></span><span></span></div>
+        <!-- hamburger-menu -->
+    </div>
 
+    <div class="viewbuttons">
+        <div >
+            <a title="Save code as a txt file" onclick="saveCode();" class="icon-button2 " >
+                <i id="btnsave" class="fa fa-save"></i><span></span>
+            </a>
+        </div>
+        <div >
+        <a title="Save image as a svg file (CTRL+SHIFT+S)" onclick="saveSVG();" class="icon-button2 ">
+            <i id="btnsave" class="fa fa-save "></i><span></span>
+        </a>
+        </div>
+        <div >
+            <a title="Open file (CTRL+SHIFT+F)" onclick="clickOpen();" id="open" class="icon-button2 ">
+                <i id="btnopen" class="fa fa-folder-open"></i><span></span>
+            </a>
+        </div>
+        
+        <input type="file" name="open" id="openFile">
+    </div>
 
-
-
-            <div id="preview">
-                <div id="svg">
-
-                </div>
-            </div>
+    <div class="zoombuttons">
+        <div>
+            <a title="Zoom In (CTRL+SHIFT +)" onclick="zoomIn();" class="icon-button2">
+                <i class="fa fa-search-plus"></i><span></span>
+            </a>
+        </div>
+        <div>
+            <a title="Zoom Out (CTRL+SHIFT -)" onclick="zoomOut();" class="icon-button2 ">
+                <i class="fa fa-search-minus"></i><span></span>
+            </a>
+        </div>
+        <div>
+            <a title="Undo (CTRL+SHIFT+BACKSPACE)" onclick="undo();" class="icon-button2 ">
+                <i class="fa fa-undo"></i><span></span>
+            </a>
+        </div>     
+        <div>
+            <a title="Expand preview (CTRL+SHIFT+E)" onclick="expandPreview();" class="icon-button2 ">
+                <i id="btnexpand" class="fa fa-expand"></i><span></span>
+            </a>
         </div>
     </div>
+
+
+</div>
+<SCRIPT type="text/javascript">
+    var el = document.getElementById("cuadro");
+      
+        el.addEventListener("mousedown", ratonPulsado, false);
+        el.addEventListener("mouseup", ratonSoltado, false);
+        document.addEventListener("mousemove", ratonMovido, false);
+      
+    var terminal = document.getElementById("paper");
+      
+        terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
+        terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
+        document.addEventListener("mousemove", ratonMovidoTerminal, false);
+    var menu = document.getElementById("menu-examples")
+        
+    
+        
+        
+</SCRIPT>  
+
     <!-- HIDDEN INPUT FILE -->
     <input type="file" id="file-open-input" accept=".html,.htm,.txt" class="hide">
 </body>

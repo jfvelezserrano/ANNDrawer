@@ -9,19 +9,26 @@ var svgCode;
 var zoomCounter = 0
 
 
+
 /**
  * LOAD PAGE
  */
 $(function () {
     loadInputs();
     loadMenu();
+    loadDarkTheme();
     $("html,body").animate({ scrollTop: 0 }, "slow");
+    $("#big-menu-button").click()
+    $("#big-menu-button").click()
+    
+
 });
 
 /**
  * Loads the input of the menu
  */
 function loadInputs() {
+
     let inputsColor = ['--cubeColor', '--kernelColor', '--denseColor', '--pyramidColor',
         '--arrowColor', '--strokeColor', '--fontColor', '--inputColor',
     ]
@@ -51,6 +58,8 @@ function loadInputs() {
         let example = ($('input:radio[name=test]:checked').val());
         init(example);
     });
+
+
     $('input:radio[name=cubedimensions]').change(function () {
         updatePreview(cm.getValue(),this.zoomCounter);
     });
@@ -127,8 +136,8 @@ function loadInputs() {
  * @param {e} e 
  * @param {number} number 
  */
-function holdClickDec(e, number, pressed) {
-    if (e.type == "mousedown" || pressed) {
+function holdClickDec(e, number) {
+    if (e.type == "mousedown") {
         decrement(number);
     } else {
         stop()
@@ -140,7 +149,7 @@ function holdClickDec(e, number, pressed) {
  * @param {e} e 
  * @param {number} number 
  */
-function holdClickInc(e, number, pressed) {
+function holdClickInc(e, number) {
     if (e.type == "mousedown") {
         increment(number);
     } else {
@@ -190,11 +199,14 @@ function loadInputColor(number, css) {
  */
 function loadMenu() {
     /*SLIDER MENU*/
+
+
     function slideMenu() {
         var activeState = $("#menu-container .menu-list").hasClass("active");
         $("#menu-container .menu-list").animate({ left: activeState ? "0%" : "-100%" }, 400);
     }
-    $("#menu-wrapper").click(function (event) {
+   
+    $("#big-menu-button").click(function (event) {
         event.stopPropagation();
         $("#hamburger-menu").toggleClass("open");
         $("#menu-container .menu-list").toggleClass("active");
@@ -202,6 +214,7 @@ function loadMenu() {
 
         $("body").toggleClass("overflow-hidden");
     });
+
 
     $(".menu-list").find(".accordion-toggle").click(function () {
         $(this).next().toggleClass("open").slideToggle("fast");
@@ -220,6 +233,30 @@ function loadMenu() {
     });
 
     $('#fontButton').css('font-family', 'Calibri');
+}
+
+function changeModel(number) {
+    switch (number) {
+        case 1:
+            init(0)
+            break
+        case 2:
+            init(1)
+            break;
+        case 3:
+            init(2)
+            break;
+        case 4:
+            init(3)
+            break;
+        case 5:
+            init(4)
+            break;
+        case 6:
+            init(5)
+            break;
+        }
+  
 }
 
 /**
@@ -598,21 +635,22 @@ document.onkeyup = function (e) {
 
     // Open Menu
     if (e.ctrlKey && e.shiftKey && theChar == 'Q') {
-        $("#menu-wrapper").click();
+        $("#big-menu-button").click();
+
     }
 
 
 
-    /*if (e.shiftKey){
+    if (e.shiftKey){
     switch (e.key){
         case 'ArrowRight':
-            let pressedLeft = false
-            while ( e.key == 'ArrowRight'){
-                pressedLeft = true
-                holdClickDec(e,17,pressedLeft)
+            if (e.ctrlKey){
+                    holdClickInc(e, 17);
+                    window.alert('asdf')
             }
     }
 }
+
 
     if (e.shiftKey  && e.key == 'ArrowLeft') {
         window.alert('left key')
@@ -623,7 +661,7 @@ document.onkeyup = function (e) {
     }
     if (e.shiftKey  && e.key == 'ArrowDown') {
        // right arrow
-    }*/
+    }
 
     
 }
@@ -816,6 +854,7 @@ function stop() {
 
         var widthWindow = window.innerWidth;
         var heightWindow = window.innerHeight;
+        
 
         var limitBottom = heightWindow - 150
         var limitRight = widthWindow - 400
@@ -827,23 +866,23 @@ function stop() {
     
     function resizeBottom(height) {
         let finalHeight = height - 300
-        document.getElementById("paper").style.top = (finalHeight) + "px";
+        let finalWidth = window.innerWidth;
+        document.getElementById("paper").style.top = (finalHeight -25) + "px";
         document.getElementById("paper").style.left = "0px";
-        document.getElementById("paper").style.width = "100%";
+        document.getElementById("paper").style.width = (finalWidth -25) + "px";
         document.getElementById("paper").style.height = "300px";
         ratonSoltadoTerminal()
     }
     
     function resizeRight(width,height) {
         let finalWidth = width - 400
-        
-        
-        
+        document.getElementById("paper").style.top = "-00px";
+        //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
+        let finalpadding = 28
 
-        document.getElementById("paper").style.top = "0px";
-        document.getElementById("paper").style.left = (finalWidth) + "px";
+        document.getElementById("paper").style.left = (finalWidth-finalpadding) + "px";
         document.getElementById("paper").style.width = "400px";
-        document.getElementById("paper").style.height = height + "px";
+        document.getElementById("paper").style.height = height - 25 + "px";
         ratonSoltadoTerminal()
         
     }
@@ -871,7 +910,18 @@ function stop() {
                 }      
                 return posicion;
     }
+    function loadDarkTheme() {
+        var checkbox = document.getElementById("checkbox-theme");
+        checkbox.addEventListener("change", changeTheme, false)
+        
+    } 
 
+    
+    
+    function changeTheme(){
+        document.body.classList.toggle('dark-mode');
+        //document.getElementById("menu-examples").classList.toggle('dark')
+    }
 
 
 

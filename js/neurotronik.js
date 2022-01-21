@@ -110,15 +110,11 @@ function updatePreview(content,zoomCounter) {
         this.zoomCounter = zoomCounter
         }
         let settings = initializeDrawSettings();
-        console.log('Settings: ' +settings)
         if (content.includes('model')) {
             let code = settings + content;
-            console.log('Settings + content: ' , code)
             eval(code);
-            console.log('Settings + content: ' , code)
 
             svgCode = svgController.draw(model.getModelTree());
-            console.log('Svgcode final: ' + svgCode)
             $('#svg').html(svgCode);
             
         } else {
@@ -1182,7 +1178,7 @@ class MatrixController {
         coordinates[10] = new Coordinate(c10[0][0], c10[1][0], c10[2][0]);
     }
     multiply(a, b) {
-        console.time('multiply')
+        //console.time('multiply')
         var c = (function(dims) {
             return allocate(dims);
         })([a.length, b[0].length]);
@@ -1193,7 +1189,7 @@ class MatrixController {
                 }
             }
         }
-        console.timeEnd('multiply')
+        //console.timeEnd('multiply')
         
         return c;
     }

@@ -873,51 +873,85 @@ function stop() {
         document.getElementById("paper").style.height = "300px";
         ratonSoltadoTerminal()
     }
+
     
     function resizeRight(width,height) {
         let finalWidth = width - 400
-        document.getElementById("paper").style.top = "-00px";
+        document.getElementById("paper").style.top = "0px";
         //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
         let finalpadding = 28
-
+        
         document.getElementById("paper").style.left = (finalWidth-finalpadding) + "px";
         document.getElementById("paper").style.width = "400px";
         document.getElementById("paper").style.height = height - 25 + "px";
         ratonSoltadoTerminal()
         
     }
-
+    
     function ratonSoltado(evt) {
         estaPulsado = false;
         
     }
-
+    
     function ratonSoltadoTerminal(evt) {
         estaPulsadoTerminal = false;
         
     }
     
-
+    
     function getPosicion(elemento) {
-    var posicion = new Array(2);
-                if(document.defaultView && document.defaultView.getComputedStyle) {
-                    posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
-                    posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
-                } else {
-                    //Para Internet Explorer
-                    posicion[0] = parseInt(elemento.currentStyle.top);             
-                    posicion[1] = parseInt(elemento.currentStyle.left);               
-                }      
-                return posicion;
+        var posicion = new Array(2);
+        if(document.defaultView && document.defaultView.getComputedStyle) {
+            posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
+            posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
+        } else {
+            //Para Internet Explorer
+            posicion[0] = parseInt(elemento.currentStyle.top);             
+            posicion[1] = parseInt(elemento.currentStyle.left);               
+        }      
+        return posicion;
     }
+    
+    
+    
+    
+    
+    
+    function split(){
+        document.getElementById('preview').style.width = "50%"
+        document.getElementById('preview-firstSplit').classList.remove('preview-firstSplit')
+        document.getElementById('preview-firstSplit').classList.add('checked')
+        updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
+        createNewCm()
+        resizeBottomSplitted()
+        createNewExamples()
+        
+        
+    }
+    
+    function resizeBottomSplitted(){
+        //Resizing first terminal
+        document.getElementById("paper").style.top = (window.innerHeight - 222) + "px";
+        document.getElementById("paper").style.left = "0px";
+        document.getElementById("paper").style.width = "48%";
+        document.getElementById("paper").style.height = "200px";
+        //Resizing second terminal
+        document.getElementById("second-terminal").style.top = (window.innerHeight - 222) + "px";
+        document.getElementById("second-terminal").style.left = "0px";
+        document.getElementById("second-terminal").style.width = "96%";
+        document.getElementById("second-terminal").style.height = "200px";
+    }
+
+    function createNewExamples(){
+        return ;
+    }
+
     function loadDarkTheme() {
         var checkbox = document.getElementById("checkbox-theme");
         checkbox.addEventListener("change", changeTheme, false)
         
     } 
 
-    
-    
     function changeTheme(){
         document.body.classList.toggle('dark-mode');
         //document.getElementById("menu-examples").classList.toggle('dark')

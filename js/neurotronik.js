@@ -2,6 +2,8 @@
 
 /*Global variables*/
 var cm;
+var cm2;
+var cm3;
 var svgCode = "";
 var layerController;
 var x_max;
@@ -34,6 +36,20 @@ $(function() {
         updatePreview(cm.getValue(),this.zoomCounter);
     });
 });
+
+function createNewCm(){
+    cm2 = CodeMirror.fromTextArea(editor2, {
+        lineNumbers: true,
+        styleActiveLine: true,
+        mode: 'javascript'
+    });
+    //Load de example number 1
+    init2(0);
+    //Detect a change in the editor
+    cm2.on('change', function() {
+        updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
+    });
+}
 
 /*initializes the style  settings for the neural network.
 The layercontroller class, drawsettings, svg controller and model are started*/
@@ -116,6 +132,45 @@ function updatePreview(content,zoomCounter) {
 
             svgCode = svgController.draw(model.getModelTree());
             $('#svg').html(svgCode);
+                 
+        } else {
+            $('#svg').html(content);
+        }
+        //Without errors, the preview frame is blue
+        $('#svg').css('background-color', "");
+        $('#svg').css('color', "");
+        $('#svg').css('font-size', "");
+        $('#preview').css('border', '2px solid #1b6181');
+        svg = $("svg").svgPanZoom(this.ZoomOptions);
+        svg.animationTime = 0
+        for (i=0;i<zoomCounter;i++){
+            svg.zoomIn()
+        }
+   
+    } catch (error) {
+        handleErrors(error);
+        //With errors, the preview frame is colored red
+        $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
+        $('#svg').css('color', "#ce0f0f");
+        $('#svg').css('font-size', "30px");
+        $('#preview').css('border', '2px solid #ce0f0f');
+    }
+    
+    
+}
+function updatePreviewOfSplitted(content,zoomCounter) {
+    try {
+        if(zoomCounter!==0 && zoomCounter!=='undefinded'){
+        this.zoomCounter = zoomCounter
+        }
+        let settings = initializeDrawSettings();
+        if (content.includes('model')) {
+            let code = settings + content;
+            eval(code);
+
+            svgCode = svgController.draw(model.getModelTree());
+            $('#svg2').html(svgCode);
+            
             
         } else {
             $('#svg').html(content);
@@ -295,6 +350,10 @@ var example = {
 function init(number) {
     cm.setValue(example.data[number]);
     updatePreview(cm.getValue(),this.zoomCounter);
+}
+function init2(number) {
+    cm2.setValue(example.data[number]);
+    updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
 }
 
 /**

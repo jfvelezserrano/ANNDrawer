@@ -35,8 +35,12 @@ body {
 
 
 }
+body.split {
+    width: 50%;
+}
 
-body.dark-mode{
+body.dark-mode
+{
     background: #292c35;
     color: #fff;
 }
@@ -80,6 +84,11 @@ a.button {
 }
 
 .CodeMirror {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.CodeMirror2 {
     height: 100%;
     width: 100%;
     position: relative;
@@ -138,6 +147,9 @@ a.button {
 .box {
     visibility: hidden;
   }
+.box2 {
+    visibility: hidden;
+  }
 
 .paper {
     visibility: visible;
@@ -150,12 +162,28 @@ a.button {
     overflow: auto;
     display: inline-block;
     cursor: pointer;
-    /*SOLUCIONAR TOP*/
-    top: 00px;
+    top: 0px;
     left: 30%;
     resize: both;
     padding: 10px;
     height: 90px;
+
+}
+.second-terminal {
+    visibility: visible;
+    background: #000000;
+    margin: 0 auto;
+    position: absolute;
+    overflow: auto;
+    display: inline-block;
+    height: 90px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+    cursor: pointer;
+    resize: both;
+    padding: 10px;
+    bottom: 10px;;
+    
 
 }
 
@@ -169,6 +197,13 @@ a.button {
 
 
 .paper-content {
+    position: relative;
+    top: 0px;
+    right: 0;
+    bottom: 20px;
+    height: 100%;
+}
+.terminal2-content {
     position: relative;
     top: 0px;
     right: 0;
@@ -1701,3 +1736,24 @@ display:block;
   .fa-sun-o {
     color: yellow;
   }
+
+  .split {
+      position: absolute;
+      left: 0%;
+      top: 30%;
+  }
+
+  .preview-firstSplit {
+    display: none; 
+    background-color: red;
+  }
+
+   .checked {
+    width: 50%;
+    height: 100vh;
+    position: absolute;
+      right: 0%;
+      top: 0%;
+  }
+
+  

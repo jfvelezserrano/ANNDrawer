@@ -481,10 +481,11 @@
             <i class="fa fa-moon-o"></i>
             <i class='fa fa-sun-o'></i>
             <div class='ball'></div>
-        </label>
+        </label>  
+    </div>
 
-
-  
+    <div class="split">
+        <button id="split-button" onclick="split()">Split it</button>
     </div>
 
 
@@ -547,7 +548,26 @@
     </div>
 
 
-</div>
+    </div>
+
+  
+    <div id="preview-firstSplit" class="preview-firstSplit">
+        <div id="svg2">
+        </div>
+
+        <div id="box2" class="box2">
+            <div id="second-terminal" class="second-terminal">
+                <div class="terminal2-content">
+                    <textarea id="editor2" class="CodeMirror2" ></textarea>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+
+
 <SCRIPT type="text/javascript">
     var el = document.getElementById("cuadro");
       
@@ -560,11 +580,7 @@
         terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
         terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
         document.addEventListener("mousemove", ratonMovidoTerminal, false);
-    var menu = document.getElementById("menu-examples")
-        
-    
-        
-        
+
 </SCRIPT>  
 
     <!-- HIDDEN INPUT FILE -->

@@ -5,6 +5,7 @@ var cm;
 var cm2;
 var cm3;
 var svgCode = "";
+var svgCode2 = "";
 var layerController;
 var x_max;
 var x_min;
@@ -168,17 +169,17 @@ function updatePreviewOfSplitted(content,zoomCounter) {
             let code = settings + content;
             eval(code);
 
-            svgCode = svgController.draw(model.getModelTree());
-            $('#svg2').html(svgCode);
+            svgCode2 = svgController.draw(model.getModelTree());
+            $('#svg2').html(svgCode2);
             
             
         } else {
-            $('#svg').html(content);
+            $('#svg2').html(content);
         }
         //Without errors, the preview frame is blue
-        $('#svg').css('background-color', "");
-        $('#svg').css('color', "");
-        $('#svg').css('font-size', "");
+        $('#svg2').css('background-color', "");
+        $('#svg2').css('color', "");
+        $('#svg2').css('font-size', "");
         $('#preview').css('border', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(this.ZoomOptions);
         svg.animationTime = 0
@@ -193,9 +194,20 @@ function updatePreviewOfSplitted(content,zoomCounter) {
         $('#svg').css('color', "#ce0f0f");
         $('#svg').css('font-size', "30px");
         $('#preview').css('border', '2px solid #ce0f0f');
-    }
+    } 
+}
+
+function deleteSplitted(){
+
     
-    
+
+}
+
+function deleteCm(){
+    cm2 = null
+    console.log('asdfa')
+    $('#terminal2-content div').empty()
+
 }
 
 function handleErrors(error) {

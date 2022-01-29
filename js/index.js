@@ -6,6 +6,7 @@ var svg;
 var timeout;
 var speed = 100;
 var svgCode;
+var svgCode2;
 var zoomCounter = 0
 
 
@@ -129,6 +130,7 @@ function loadInputs() {
     
     /*Open file*/
     openFile();
+    openFile2();
 }
 
 /**
@@ -203,7 +205,7 @@ function loadMenu() {
 
     function slideMenu() {
         var activeState = $("#menu-container .menu-list").hasClass("active");
-        $("#menu-container .menu-list").animate({ left: activeState ? "0%" : "-100%" }, 400);
+        $("#menu-container .menu-list").animate({ left: activeState ? "-25px" : "-1500px" }, 400);
     }
    
     $("#big-menu-button").click(function (event) {
@@ -262,45 +264,73 @@ function changeModel(number) {
 /**
  * Save the code of the neural network
  */
-function saveCode() {
+function saveCode(num) {
     var fname = prompt('Code File', 'neuroCode');
-    if (fname) {
+    if (fname && num==1) {
         saveAsFile(fname, cm.getValue(), 'text/plain');
+    }
+    if (fname && num==2) {
+        saveAsFile(fname, cm2.getValue(), 'text/plain');
     }
 }
 
 /**
  * Save the SVG file generated
  */
-function saveSVG() {
+function saveSVG(num) {
     var fname = prompt('Svg File', 'neuroImage');
-    if (fname) {
+    if (fname && num==1) {
         let save = svgCode.slice(54, svgCode.length);
         svgCode = '<svg id="svgImage" viewBox=\'' + (x_min) + ' ' + (y_min - 10) + ' ' + (x_max - x_min + 15) + ' ' + (y_max - y_min + 10) + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n' + save;
         saveAsFile(fname, svgCode, 'image/svg+xml');
+    }
+    if (fname && num==2) {
+        let save = svgCode2.slice(54, svgCode2.length);
+        svgCode2 = '<svg id="svgImage" viewBox=\'' + (x_min) + ' ' + (y_min - 10) + ' ' + (x_max - x_min + 15) + ' ' + (y_max - y_min + 10) + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n' + save;
+        saveAsFile(fname, svgCode2, 'image/svg+xml');
     }
 }
 
 /**
  * Open the code and update the editor with the content of this file
  */
-function clickOpen() {
-    $('#openFile').val(''); // Reset de the content of input type file
-    $('#openFile').click(); // Click de hidden input type file
+function clickOpen(num) {
+    if (num == 1){
+        $('#openFile').val(''); // Reset de the content of input type file
+        $('#openFile').click(); // Click de hidden input type file
+    }
+    if (num == 2){
+        $('#openFile2').val(''); // Reset de the content of input type file
+        $('#openFile2').click(); // Click de hidden input type file
+    }
 }
 
 function openFile(){
     $("#openFile").on('change', function () {
+            var fr = new FileReader();
+            fr.onload = function () {
+                if (fileValidation()) {
+                    cm.setValue(this.result);
+                    updatePreview(cm.getValue(),this.zoomCounter);
+                }
+            }
+            fr.readAsText(this.files[0]);
+    })
+}
+
+function openFile2(){
+    $("#openFile2").on('change', function () {
         var fr = new FileReader();
         fr.onload = function () {
             if (fileValidation()) {
-                cm.setValue(this.result);
-                updatePreview(cm.getValue(),this.zoomCounter);
+                cm2.setValue(this.result);
+                updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
             }
         }
         fr.readAsText(this.files[0]);
-    })
+})
 }
+
 
 /**
  * Returns true if the file to open is a txt format
@@ -872,6 +902,8 @@ function stop() {
         document.getElementById("paper").style.width = (finalWidth -25) + "px";
         document.getElementById("paper").style.height = "300px";
         ratonSoltadoTerminal()
+        reallocateViewButtons()
+
     }
 
     
@@ -918,15 +950,52 @@ function stop() {
     
     
     function split(){
-        document.getElementById('preview').style.width = "50%"
-        document.getElementById('preview-firstSplit').classList.remove('preview-firstSplit')
-        document.getElementById('preview-firstSplit').classList.add('checked')
-        updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
-        createNewCm()
-        resizeBottomSplitted()
-        createNewExamples()
+
+        let splitted = document.getElementById("preview-firstSplit").classList.value
+        if (splitted == "checked"){
+            
+            document.getElementById('preview').style.width = "100%"
+            document.getElementById('preview-firstSplit').classList.remove('checked')
+            document.getElementById('preview-firstSplit').classList.add('preview-firstSplit')
+            updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
+            resizeBottom()
+            //deleteExamples()
+            deleteCm()
+            deleteSplitted()
+        }else {
+            document.getElementById('preview').style.width = "50%"
+            document.getElementById('preview-firstSplit').classList.remove('preview-firstSplit')
+            document.getElementById('preview-firstSplit').classList.add('checked')
+            
+
+
+            updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
+            createNewCm()
+            resizeBottomSplitted()
+            createNewExamples()
+            reallocateOptions()
+
+        }
         
-        
+    }
+
+    function reallocateOptions() {
+
+        //REALLOCATE THE VIEW BUTTONS AND ALLOWING THE HIDDEN BE VISIBLE
+        reallocateViewButtons()
+        document.getElementById('viewbuttons2').classList.remove('viewbuttons2')
+        document.getElementById('viewbuttons2').classList.add('viewbuttons2-splitted')
+
+        //ALLOWING THE HIDDEN BUTTONS BE VISIBLE
+        document.getElementById('zoombuttons2').classList.remove('zoombuttons2')
+        document.getElementById('zoombuttons2').classList.add('zoombuttons2-splitted')
+
+    }
+
+    function reallocateViewButtons() {
+        document.getElementById('viewbuttons').style.top = '50px'
+        document.getElementById('viewbuttons').style.left = '10px'
+        document.getElementById('viewbuttons').style.left = '10px'
     }
     
     function resizeBottomSplitted(){
@@ -954,7 +1023,15 @@ function stop() {
 
     function changeTheme(){
         document.body.classList.toggle('dark-mode');
-        //document.getElementById("menu-examples").classList.toggle('dark')
+        let menu_mode = document.getElementById("menu-examples").classList.value
+        if (menu_mode == "menu-examples") {
+            document.getElementById("menu-examples").classList.remove('menu-examples') 
+            document.getElementById("menu-examples").classList.add('menu-examples-dark-mode')
+
+        }else{
+            document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode') 
+            document.getElementById("menu-examples").classList.add('menu-examples')
+        }
     }
 
 

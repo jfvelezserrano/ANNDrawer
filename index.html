@@ -218,11 +218,11 @@
                 </li>
                 <ul class="menu-submenu accordion-content">
                     <li>
-                        <div class="color-opacity">
+                        <div class="color-opacity2">
                             <input id="input13" type="color" value="#000000" name="input13" class="color-input" />
                             <div id="custom-input-13" class="custom"></div>
                         </div>
-                        <div class="color-opacity">
+                        <div class="color-opacity2">
                             <div class="opacity">
                                 <span class="radiotitle">Size</span>
                                 <div id="decrement14" class="input-number-decrement">–</div><input
@@ -232,7 +232,7 @@
                             </div>
                         </div>
                         <div class="button-distance">
-                            <span class="radiotitle">Font Family</span>
+                            <span class="radiotitle2">Font Family</span>
                             <button type="button" onclick="toggleButton();" class="btn btn-default btn-md btn3d"
                                 id="fontButton">Calibri</button>
                         </div>
@@ -250,7 +250,7 @@
                     <li>
                         <div class="rangediv">
                             <div>
-                                <span class="radiotitle">X-Axis</span>
+                                <span class="radiotitle3">X-Axis</span>
                                 <div id="decrement17" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(17);" class="input-number" id="input17" name="input17"
                                     type="text" value="30" min="-360" max="360">
@@ -260,7 +260,7 @@
                             </div>
                             <br>
                             <div>
-                                <span class="radiotitle">Y-Axis</span>
+                                <span class="radiotitle3">Y-Axis</span>
                                 <div id="decrement18" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(18);" class="input-number" id="input18" name="input18"
                                     type="text" value="60" min="-360" max="360">
@@ -269,7 +269,7 @@
                             </div>
                             <br>
                             <div>
-                                <span class="radiotitle">Z-Axis</span>
+                                <span class="radiotitle3">Z-Axis</span>
                                 <div id="decrement19" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(19);" class="input-number" id="input19" name="input19"
                                     type="text" value="0" min="-360" max="360">
@@ -291,7 +291,7 @@
                     <li>
                         <div class="rangediv">
                             <div>
-                                <span class="radiotitle">Nodes</span>
+                                <span class="radiotitle3">Nodes</span>
                                 <div id="decrement20" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(20);" class="input-number" id="input20" name="input20"
                                     type="text" value="50" min="0" max="250">
@@ -300,7 +300,7 @@
                             </div>
                             <br>
                             <div>
-                                <span class="radiotitle">Layers</span>
+                                <span class="radiotitle3">Layers</span>
                                 <div id="decrement21" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(21);" class="input-number" id="input21" name="input21"
                                     type="text" value="50" min="0" max="250">
@@ -309,7 +309,7 @@
                             </div>
                             <br>
                             <div>
-                                <span class="radiotitle">Parent</span>
+                                <span class="radiotitle3">Parent</span>
                                 <div id="decrement22" class="input-number-decrement">–</div><input
                                     onblur="checkInputNumber(22);" class="input-number" id="input22" name="input22"
                                     type="text" value="50" min="0" max="250">
@@ -332,26 +332,31 @@
                     </li>
                     <ul class="menu-submenu accordion-content2">
                         <li>
-                            <p class="radiotitle">Cube Dimensions</p>
+                            <p class="radiotitle4">Cube Dimensions</p>
+                            <div class="activate-desactivate">
                             <label>
                                 <input type="radio" class="option-input radio" name="cubedimensions" value="true"
                                     checked />
-                                Activate
+                                <p class="text-options">Activate</p>
                             </label>
                             <label>
                                 <input type="radio" class="option-input radio" name="cubedimensions" value="false" />
-                                Desactivate
+                                <p class="text-options">Desactivate</p>
                             </label>
-                            <p class="radiotitle">Kernel Dimensions</p>
+                            </div>
+                            <p class="radiotitle4">Kernel Dimensions</p>
+                            <div class="activate-desactivate">
+
                             <label>
                                 <input type="radio" class="option-input radio" name="kerneldimensions" value="true"
                                     checked />
-                                Activate
+                                    <p class="text-options">Activate</p>
                             </label>
                             <label>
                                 <input type="radio" class="option-input radio" name="kerneldimensions" value="false" />
-                                Desactivate
+                                <p class="text-options">Desactivate</p>
                             </label>
+                            </div>
                         </li>
                     </ul>
                     <li class="toggle accordion-toggle2">
@@ -360,24 +365,29 @@
                     </li>
                     <ul class="menu-submenu accordion-content2">
                         <li>
-                            <p class="radiotitle">Width Logs</p>
+                            <p class="radiotitle4">Width Logs</p>
+                            <div class="activate-desactivate">
+
                             <label>
                                 <input type="radio" class="option-input radio" name="widthlogs" value="true" />
-                                Activate
+                                <p class="text-options">Activate</p>
                             </label>
                             <label>
                                 <input type="radio" class="option-input radio" name="widthlogs" value="false" checked />
-                                Desactivate
-                            </label>
-                            <p class="radiotitle">Depth Logs</p>
+                                <p class="text-options">Desactivate</p>
+                                </label>
+                        </div>
+                            <p class="radiotitle4">Depth Logs</p>
+                            <div class="activate-desactivate">
                             <label>
                                 <input type="radio" class="option-input radio" name="depthlogs" value="true" />
-                                Activate
+                                <p class="text-options">Activate</p>
                             </label>
                             <label>
                                 <input type="radio" class="option-input radio" name="depthlogs" value="false" checked />
-                                Desactivate
+                                <p class="text-options">Desactivate</p>
                             </label>
+                            </div>
                         </li>
                     </ul>
                 </ul>
@@ -399,18 +409,15 @@
                 </li>
                 <ul class="menu-submenu accordion-content">
                     <div class="social-media-container">
-                        <p><strong>Author:</strong> Marcos Ruiz Muñoz</p>
+                        <p><strong>Author:</strong> Eduardo Ivorra Salinas</p>
                         <p><strong>Tutor:</strong> José Francisco Vélez Serrano</p>
                         <p><strong>University:</strong> Universidad Rey Juan Carlos</p>
-                        <p><strong>GitHub:</strong> @Markete17</p>
-                        <a title="GitHub" href="https://github.com/Markete17" target="_blank"
+                        <p><strong>GitHub:</strong> @EduardoIvorra</p>
+                        <a title="GitHub" href="https://github.com/EduardoIvorra" target="_blank"
                             class="icon-button github"><i class="fa fa-github"></i><span></span></a>
-                        <a title="Twitter" href="https://twitter.com/markete17" target="_blank"
-                            class="icon-button twitter"><i class="fa fa-twitter"></i><span></span></a>
-                        <a title="Instagram" href="https://www.instagram.com/markete_17/" target="_blank"
-                            class="icon-button instagram"><i class="fa fa-instagram"></i><span></span></a>
-                        <a title="Facebook" href="https://www.facebook.com/profile.php?id=100009550702601"
-                            target="_blank" class="icon-button facebook"><i class="fa fa-facebook"></i><span></span></a>
+                        <a title="Linkedin" href="https://es.linkedin.com/in/eduardo-ivorra-salinas-130b33205" target="_blank"
+                            class="icon-button linkedin"><i class="fa fa-linkedin"></i><span></span></a>
+                       
                     </div>
                 </ul>
                 <!-- menu-submenu accordon-content-->
@@ -424,11 +431,18 @@
     
     
     
-    <div class="logo">
-        <img src="/ANNDrawer/images/logo.png" class="imglogo">
+    <div class="logo" id="logo">
+        <img src="/ANNDrawer/images/logo.png" class="imglogo" id="imglogo">
+    </div>
+    
+    <div class="logo-dark" id="logo-dark">
+        <img src="/ANNDrawer/images/logo-darkMode.png" class="imglogo-dark" id="imglogo-dark">
     </div>
 
 
+    <div class="show-error-message" id="show-error-message">
+        
+    </div>
 
     <!-- EDITOR WINDOW -->
     <div id="box" class="box">
@@ -502,11 +516,11 @@
 
     <div class="big-menu">
           <button class="big-menu-button" id="big-menu-button" onclick="this.classList.toggle('opened');this.setAttribute('aria-expanded', this.classList.contains('opened'))" aria-label="Main Menu">
-           <i class="fas fa-bars"></i> 
+           <i class="fa fa-bars"></i> 
     </div>
 
     <div class="banner" id="menu-wrapper">
-        <div title="Open/Close Menu (CTRL+SHIFT+Q)" id="hamburger-menu"><i clas="fas fa-bars"></i><span></span><span></span><span></span></div>
+        <div title="Open/Close Menu (CTRL+SHIFT+Q)" id="hamburger-menu"><i class="fas fa-bars" id="bars"></i><span></span><span></span><span></span></div>
         <!-- hamburger-menu -->
     </div>
 

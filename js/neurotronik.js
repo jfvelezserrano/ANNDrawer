@@ -21,6 +21,14 @@ var ZoomOptions = {
         height: 1000 // the height of the viewBox
     },
 }
+var ZoomOptions2 = {
+    initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
+        x: 0, // the top-left corner X coordinate
+        y: 0, // the top-left corner Y coordinate
+        width: 1000 , // the width of the viewBox
+        height: 1000 // the height of the viewBox
+    },
+}
 
 /*Update preview in init*/
 $(function() {
@@ -141,12 +149,14 @@ function updatePreview(content,zoomCounter) {
         $('#svg').css('background-color', "");
         $('#svg').css('color', "");
         $('#svg').css('font-size', "");
-        $('#preview').css('border', '2px solid #1b6181');
+        $('#preview').css('border-right', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(this.ZoomOptions);
         svg.animationTime = 0
         for (i=0;i<zoomCounter;i++){
             svg.zoomIn()
         }
+
+        document.getElementById("show-error-message").style.display = "none"
    
     } catch (error) {
         handleErrors(error);
@@ -154,7 +164,7 @@ function updatePreview(content,zoomCounter) {
         $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
         $('#svg').css('color', "#ce0f0f");
         $('#svg').css('font-size', "30px");
-        $('#preview').css('border', '2px solid #ce0f0f');
+        $('#preview').css('border-right', '2px solid #ce0f0f');
     }
     
     
@@ -180,11 +190,11 @@ function updatePreviewOfSplitted(content,zoomCounter) {
         $('#svg2').css('background-color', "");
         $('#svg2').css('color', "");
         $('#svg2').css('font-size', "");
-        $('#preview').css('border', '2px solid #1b6181');
-        svg = $("svg").svgPanZoom(this.ZoomOptions);
-        svg.animationTime = 0
+        $('#preview').css('border-right', '2px solid #1b6181');
+        svg2 = $("svg").svgPanZoom(this.ZoomOptions2);
+        svg2.animationTime = 0
         for (i=0;i<zoomCounter;i++){
-            svg.zoomIn()
+            svg2.zoomIn()
         }
    
     } catch (error) {
@@ -223,9 +233,13 @@ function handleErrors(error) {
         }
 
     } catch (e) {
-        $('#svg').html('Badly defined variable or function.' + '<p>' + error + '</p>');
+        document.getElementById("show-error-message").style.display = "block"
+        $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');
     }
 }
+
+
+
 /**
  * Stores the sample codes
  * 

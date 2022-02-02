@@ -3,6 +3,7 @@
  */
 var zoom = 100;
 var svg;
+var svg2;
 var timeout;
 var speed = 100;
 var svgCode;
@@ -374,7 +375,7 @@ function decrement(number) {
         }, speed);
         let result = parseFloat(n1 - 3);
         if (result > -360) {
-            $('#input' + number).val(result.toFixed(0));
+            $('#input' + number).val(result.oFixed(0));
         } else {
             $('#input' + number).val(-360);
         }
@@ -513,6 +514,7 @@ function zoomIn() {
     svg.zoomIn();
     this.viewBox = svg.getViewBox()
 }
+
 
 function zoomOut() {
     zoomCounter--;
@@ -1027,10 +1029,22 @@ function stop() {
         if (menu_mode == "menu-examples") {
             document.getElementById("menu-examples").classList.remove('menu-examples') 
             document.getElementById("menu-examples").classList.add('menu-examples-dark-mode')
-
+            document.getElementById("logo").style.display = "none"
+            document.getElementById("imglogo").style.visibility = "hidden"
+            document.getElementById("logo-dark").style.display = "block"
+            document.getElementById("imglogo-dark").style.visibility = "visible"
+            document.getElementById("big-menu-button").style.color = "#FFF"
+            document.getElementById("cuadro").style.backgroundColor = "#fff"
         }else{
             document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode') 
             document.getElementById("menu-examples").classList.add('menu-examples')
+            document.getElementById("logo").style.display = "block"
+            document.getElementById("imglogo").style.visibility = "visible"
+            document.getElementById("logo-dark").style.display = "none"
+            document.getElementById("imglogo-dark").style.visibility = "hidden"
+            document.getElementById("big-menu-button").style.color = "#000"
+            document.getElementById("cuadro").style.backgroundColor = "rgba(19, 15, 15, 0.103)"
+            
         }
     }
 

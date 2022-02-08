@@ -141,7 +141,7 @@ function loadInputs() {
  * @param {number} number 
  */
 function holdClickDec(e, number) {
-    if (e.type == "mousedown") {
+    if (e.type == "mousedown" || estaPulsadoRotation) {
         decrement(number);
     } else {
         stop()
@@ -154,7 +154,7 @@ function holdClickDec(e, number) {
  * @param {number} number 
  */
 function holdClickInc(e, number) {
-    if (e.type == "mousedown") {
+    if (e.type == "mousedown" || estaPulsadoRotation)  {
         increment(number);
     } else {
         stop()
@@ -371,9 +371,9 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        timeout = setTimeout(() => {
+        /*timeout = setTimeout(() => {
             decrement(number);
-        }, speed);
+        }, speed);*/
         let result = parseFloat(n1 - 3);
         if (result > -360) {            
             $('#input' + number).val(result.toFixed(0));
@@ -412,14 +412,14 @@ function increment(number) {
             $('#input' + number).val(15);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        timeout = setTimeout(() => {
+        /*timeout = setTimeout(() => {
             increment(number);
-        }, speed);
+        }, speed);*/
         let result = parseFloat(n1 + 3);
         if (result < 360) {
-            $('#input' + number).val(result.toFixed(0));
+            $('#input' + number).val(result%360);
         } else {
-            $('#input' + number).val(360);
+            $('#input' + number).val(result % 360);
         }
     } else if (number == 20 || number == 21 || number == 22) {
         timeout = setTimeout(() => {
@@ -460,10 +460,11 @@ function checkInputNumber(number) {
     } else if (number == 17 || number == 18 || number == 19) {
         let n1 = parseFloat(input.val());
         if (n1 > 360) {
-            $('#input' + number).val(360);
+
+            $('#input' + number).val(n1 % 360);
         }
         if (n1 < -360) {
-            $('#input' + number).val(-360);
+            $('#input' + number).val(n1 % 360);
         }
     } else if (number == 20 || number == 21 || number == 22) {
         let n1 = parseFloat(input.val());
@@ -782,6 +783,7 @@ window.onbeforeunload = function (e) {
  */
 function stop() {
     clearTimeout(timeout);
+    
 }
 
 
@@ -814,7 +816,11 @@ function stop() {
 
     var xInicTerminal, yInicTerminal;
     var estaPulsadoTerminal = false;
-            
+    
+    
+    var xInicRotation, yInicRotation;
+    var estaPulsadoRotation = false;
+    
 
 
     function ratonPulsado(evt) { 
@@ -835,7 +841,27 @@ function stop() {
         //Para Internet Explorer: Contenido no seleccionable
         document.getElementById("paper").unselectable = true;
     }
+    
+    
+    
+    function ratonPulsadoRotation(evt) { 
+        console.log("pillando el rotation")
+        if (evt.button == 2) {
+            //document.getElementById("rotation").style.zIndex = "-100000";          
 
+            console.log('ee')
+            xInicRotation = evt.clientX
+            yInicRotation = evt.clientY
+            estaPulsadoRotation = true   
+            //Para Internet Explorer: Contenido no seleccionable
+            //document.getElementById("rotation").unselectable = true;          
+        }
+        else {
+            //document.getElementById("rotation").style.zIndex = "-100000";          
+
+        }
+    }
+    
    
     
     function ratonMovido(evt) {
@@ -1040,6 +1066,8 @@ function stop() {
     function loadDarkTheme() {
         var checkbox = document.getElementById("checkbox-theme");
         checkbox.addEventListener("change", changeTheme, false)
+        //document.getElementById("rotation").style.display = "none"  
+
         
     } 
 
@@ -1068,8 +1096,56 @@ function stop() {
         }
     }
 
+    function rotation(){
+        window.alert('asd')
+    }
+
+    function ratonSoltadoRotation(evt) {
+        estaPulsadoRotation = false;
+        holdClickDec("", 18)
+        holdClickInc("", 18)  
+        //document.getElementById("rotation").style.display = "none"  
+    }
 
 
+    localStorage.setItem('x',0)
+    localStorage.setItem('y',0)
 
-  
+    function ratonMovidoRotation(evt) {
+        if(estaPulsadoRotation) {
+            //Calcular la diferencia de posición
+            let yOld = localStorage.getItem('y')
+            
+            let xOld = localStorage.getItem('x')
+            var xActual = evt.clientX;
+            var yActual = evt.clientY; 
+
+            if (xOld == 0 && yOld == 0) {
+                localStorage.setItem('x',xActual)
+                localStorage.setItem('y',yActual)
+                return
+            
+            }
+            if(xActual<xOld){
+                holdClickInc("", 18)
+            }
+            if(xActual>xOld){
+                holdClickDec("", 18)
+            }
+            if(yActual<yOld){
+                holdClickInc("", 17)
+            }
+            if(yActual>yOld){
+                holdClickDec("", 17)
+            }
+
+            localStorage.setItem('x',xActual)
+            localStorage.setItem('y',yActual)
+
+         
+            
+        }
+    }
+
+
 

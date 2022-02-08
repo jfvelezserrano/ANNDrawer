@@ -13,6 +13,7 @@ var y_max;
 var y_min;
 var indexShortcuts=0;
 var zoomCounter = 0
+var zoomCounter2 = 0
 var ZoomOptions = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
         x: 0, // the top-left corner X coordinate
@@ -192,7 +193,9 @@ function updatePreviewOfSplitted(content,zoomCounter) {
         $('#svg2').css('font-size', "");
         $('#preview').css('border-right', '2px solid #1b6181');
         svg2 = $("svg").svgPanZoom(this.ZoomOptions2);
+        console.log(svg2)
         svg2.animationTime = 0
+        // SVG PAN ZOOM DEVUELVE UN ARRAY CON LAS 2 POSICIONES
         for (i=0;i<zoomCounter;i++){
             svg2.zoomIn()
         }

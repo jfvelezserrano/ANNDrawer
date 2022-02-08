@@ -9,6 +9,7 @@ var speed = 100;
 var svgCode;
 var svgCode2;
 var zoomCounter = 0
+var zoomCounter2 = 0
 
 
 
@@ -374,8 +375,8 @@ function decrement(number) {
             decrement(number);
         }, speed);
         let result = parseFloat(n1 - 3);
-        if (result > -360) {
-            $('#input' + number).val(result.oFixed(0));
+        if (result > -360) {            
+            $('#input' + number).val(result.toFixed(0));
         } else {
             $('#input' + number).val(-360);
         }
@@ -509,22 +510,41 @@ function toggleButton() {
     updatePreview(cm.getValue(),this.zoomCounter);
 }
 
-function zoomIn() {
+function zoomIn(num) {
+    if (num==2){
+        zoomCounter2++;
+        svg2.zoomIn()
+        this.viewBox = svg2.getViewBox()
+    }
+    else{
     zoomCounter++;
     svg.zoomIn();
     this.viewBox = svg.getViewBox()
+    }
 }
 
 
-function zoomOut() {
+function zoomOut(num) {
+    if (num==2){
+        zoomCounter2--;
+        svg2.zoomOut()
+        this.viewBox = svg2.getViewBox()
+    }
+    else{
     zoomCounter--;
     svg.zoomOut();
     this.viewBox = svg.getViewBox()
+    }
 }
 
-function undo() {
+function undo(num) {
+    if (num==2){
+
+    }
+    else{
     svg.reset()
     this.zoomCounter = 0
+    }
 }
 
 function reset(...args) {

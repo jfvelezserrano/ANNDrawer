@@ -26,7 +26,7 @@
 <!-- Body -->
 
 <body oncontextmenu="return false;">
-    
+    <div class="rotation" id="rotation"></div>
     <div id="preview">
         <div id="svg"></div>
     
@@ -648,11 +648,11 @@
         terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
         document.addEventListener("mousemove", ratonMovidoTerminal, false);
     
-    //var rotation = document.getElementById("rotation");
+    var rotation = document.getElementById("rotation");
       
-      //rotation.addEventListener("mousedown", ratonPulsadoRotation, false);
-      //rotation.addEventListener("mouseup", ratonSoltadoRotation, false);
-      //document.addEventListener("mousemove", ratonMovidoRotation, false);
+      document.addEventListener("mousedown", ratonPulsadoRotation, false);
+      document.addEventListener("mouseup", ratonSoltadoRotation, false);
+      document.addEventListener("mousemove", ratonMovidoRotation, false);
       
 
 

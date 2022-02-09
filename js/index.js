@@ -847,7 +847,8 @@ function stop() {
     function ratonPulsadoRotation(evt) { 
         console.log("pillando el rotation")
         if (evt.button == 2) {
-            //document.getElementById("rotation").style.zIndex = "-100000";          
+            document.getElementById("svgImage").style.zIndex = "-100000";          
+            //document.getElementById("rotation").style.zIndex = "0";          
 
             console.log('ee')
             xInicRotation = evt.clientX
@@ -857,7 +858,9 @@ function stop() {
             //document.getElementById("rotation").unselectable = true;          
         }
         else {
-            //document.getElementById("rotation").style.zIndex = "-100000";          
+            document.getElementById("rotation").style.zIndex = "-100000"; 
+            document.getElementById("svgImage").style.zIndex = "0";          
+         
 
         }
     }

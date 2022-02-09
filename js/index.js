@@ -10,7 +10,7 @@ var svgCode;
 var svgCode2;
 var zoomCounter = 0
 var zoomCounter2 = 0
-
+var newViewBox;
 
 
 /**
@@ -64,16 +64,16 @@ function loadInputs() {
 
 
     $('input:radio[name=cubedimensions]').change(function () {
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
     $('input:radio[name=kerneldimensions]').change(function () {
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
     $('input:radio[name=widthlogs]').change(function () {
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
     $('input:radio[name=depthlogs]').change(function () {
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
     $('#increment17').on('mousedown mouseup mouseleave', e => {
         holdClickInc(e, 17);
@@ -179,7 +179,7 @@ function loadInput(number, max, min) {
             input.value = max;
         }
         $('#input' + number).val(input.value);
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
 }
 
@@ -194,7 +194,7 @@ function loadInputColor(number, css) {
     input.addEventListener('change', function () {
         body.style.setProperty(css, input.value);
         $('#input' + number).val(input.value);
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),svg.getViewBox());
     });
 }
 
@@ -313,7 +313,7 @@ function openFile(){
             fr.onload = function () {
                 if (fileValidation()) {
                     cm.setValue(this.result);
-                    updatePreview(cm.getValue(),this.zoomCounter);
+                    updatePreview(cm.getValue(),svg.getViewBox());
                 }
             }
             fr.readAsText(this.files[0]);
@@ -326,7 +326,7 @@ function openFile2(){
         fr.onload = function () {
             if (fileValidation()) {
                 cm2.setValue(this.result);
-                updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
+                updatePreviewOfSplitted(cm2.getValue(),svg.getViewBox());
             }
         }
         fr.readAsText(this.files[0]);
@@ -388,7 +388,7 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     }
-    updatePreview(cm.getValue(),this.zoomCounter);
+    updatePreview(cm.getValue(),svg.getViewBox());
 }
 
 /**
@@ -439,8 +439,9 @@ function increment(number) {
             $('#input' + number).val(1);
         }
     }
+    //console.log(svg.getViewBox())
     
-    updatePreview(cm.getValue(),this.zoomCounter);
+    updatePreview(cm.getValue(),svg.getViewBox());
 }
 
 /**
@@ -508,7 +509,7 @@ function toggleButton() {
     let i = (fonts.index) % fonts.list.length;
     $('#fontButton').text(fonts.list[i]);
     $('#fontButton').css('font-family', fonts.list[i] + ', sans-serif');
-    updatePreview(cm.getValue(),this.zoomCounter);
+    updatePreview(cm.getValue(),svg.getViewBox());
 }
 
 function zoomIn(num) {
@@ -593,7 +594,7 @@ function reset(...args) {
         $('#input' + (args[0] + 1)).val(b);
         $('#input' + (args[0] + 2)).val(c);
     }
-    updatePreview(cm.getValue(),this.zoomCounter);
+    updatePreview(cm.getValue(),svg.getViewBox());
 }
 
 /**
@@ -789,15 +790,7 @@ function stop() {
 
 
 
-    function movilityDot()
-
-    {
-        var el = document.getElementById("cuadro");    
-        el.addEventListener("mousedown", ratonPulsado, false);
-        el.addEventListener("mouseup", ratonSoltado, false);
-        document.addEventListener("mousemove", ratonMovido, false);
-
-    }
+    
 
 
     function movilityTerminal()
@@ -823,15 +816,7 @@ function stop() {
     
 
 
-    function ratonPulsado(evt) { 
-        //Obtener la posición de inicio
-        xInic = evt.clientX;
-        yInic = evt.clientY;    
-        estaPulsado = true;
-
-        //Para Internet Explorer: Contenido no seleccionable
-        document.getElementById("cuadro").unselectable = true;
-    }
+    
 
     function ratonPulsadoTerminal(evt) { 
         //Obtener la posición de inicio
@@ -867,28 +852,7 @@ function stop() {
     
    
     
-    function ratonMovido(evt) {
-        if(estaPulsado) {
-            //Calcular la diferencia de posición
-            var xActual = evt.clientX;
-            var yActual = evt.clientY;    
-            var xInc = xActual-xInic;
-            var yInc = yActual-yInic;
-            xInic = xActual;
-            yInic = yActual;
 
-
-            //if (xActual)
-            
-            //Establecer la nueva posición
-            var elemento = document.getElementById("cuadro");
-        
-            var position = getPosicion(elemento);
-            document.getElementById("cuadro").style.top = (position[0] + yInc) + "px";
-            document.getElementById("cuadro").style.left = (position[1] + xInc) + "px";
-            
-        }
-    }
 
     function ratonMovidoTerminal(evt) {
         if(estaPulsadoTerminal) {
@@ -927,7 +891,7 @@ function stop() {
         input.addEventListener('change', function () {
             body.style.setProperty(css, input.value);
             $('#input' + number).val(input.value);
-            updatePreview(cm.getValue(),this.zoomCounter);
+            updatePreview(cm.getValue(),svg.getViewBox());
         });
     }
 
@@ -1008,7 +972,7 @@ function stop() {
             document.getElementById('preview').style.width = "100%"
             document.getElementById('preview-firstSplit').classList.remove('checked')
             document.getElementById('preview-firstSplit').classList.add('preview-firstSplit')
-            updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
+            updatePreviewOfSplitted(cm.getValue(),svg.getViewBox())
             resizeBottom()
             //deleteExamples()
             deleteCm()
@@ -1085,7 +1049,6 @@ function stop() {
             document.getElementById("logo-dark").style.display = "block"
             document.getElementById("imglogo-dark").style.visibility = "visible"
             document.getElementById("big-menu-button").style.color = "#FFF"
-            document.getElementById("cuadro").style.backgroundColor = "#fff"
         }else{
             document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode') 
             document.getElementById("menu-examples").classList.add('menu-examples')
@@ -1094,7 +1057,6 @@ function stop() {
             document.getElementById("logo-dark").style.display = "none"
             document.getElementById("imglogo-dark").style.visibility = "hidden"
             document.getElementById("big-menu-button").style.color = "#000"
-            document.getElementById("cuadro").style.backgroundColor = "rgba(19, 15, 15, 0.103)"
             
         }
     }

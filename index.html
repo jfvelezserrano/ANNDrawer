@@ -455,36 +455,7 @@
 
     <!-- PREVIEW WINDOW -->
     <div class="preview-container">
-            <div id="cuadro" class="cuadro" onclick="movilityDot();">  
-                        <div class="first-arrow">
-                            <div class="part2"><span class="part2-arrow">
-                                <input type="image" src="images/flecha_izquierda.png" height="10px" width="5px"  id="incrementRotationY" />
-                            </span></div>
-                           
-                        
-                            
-                        </div>
-                        <div class="mid-arrow">
-                            <div class="part1"><span>
-
-                                <input type="image"  src="images/flecha_arriba.png" height="10px" width="5px"   id="incrementRotationX" />
-                                
-                                    
-
-                            </span></div>
-                            <div class="part4">
-                                <span>
-
-                                    <input type="image" src="images/flecha_abajo.png" height="10px" width="5px"  id="decrementRotationX" />
-                                                        </span>
-                            </div>
-                            
-                        </div>
-                        <div class="part3"><span>
-                            <input type="image" src="images/flecha_derecha.png" height="10px" width="5px"  id="decrementRotationY" />
-                        </span></div>
             
-            </div>
             
     </div>
 
@@ -539,7 +510,7 @@
         <div >
             <a title="Open file (CTRL+SHIFT+F)" onclick="clickOpen(1);" id="open" class="icon-button2 ">
                 <p class="text-viewbuttons">
-                    OPEN FILE</p><span></span>
+                    OPEN CODE</p><span></span>
             </a>
         </div>
         
@@ -562,18 +533,14 @@
                 <i class="fa fa-undo"></i><span></span>
             </a>
         </div>     
-        <div>
-            <a title="Expand preview (CTRL+SHIFT+E)" onclick="expandPreview();" class="icon-button ">
-                <i id="btnexpand" class="fa fa-expand"></i><span></span>
-            </a>
-        </div>
+        
         
     </div>
 
 
     </div>
 
-  
+
     <div id="preview-firstSplit" class="preview-firstSplit">
         <div id="svg2">
         </div>
@@ -635,11 +602,7 @@
 
 
 <SCRIPT type="text/javascript">
-    var el = document.getElementById("cuadro");
-      
-        el.addEventListener("mousedown", ratonPulsado, false);
-        el.addEventListener("mouseup", ratonSoltado, false);
-        document.addEventListener("mousemove", ratonMovido, false);
+   
       
     var terminal = document.getElementById("paper");
       

@@ -22,14 +22,23 @@ var ZoomOptions = {
         height: 1000 // the height of the viewBox
     },
 }
-var ZoomOptions2 = {
+var newViewBox = {}
+
+
+function ZoomOptionstoString(lastViewBox){
+    if (lastViewBox!==undefined){
+    console.log('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
+    return('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
+    }
+}
+/*var ZoomOptions2 = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
         x: 0, // the top-left corner X coordinate
         y: 0, // the top-left corner Y coordinate
         width: 1000 , // the width of the viewBox
         height: 1000 // the height of the viewBox
     },
-}
+}*/
 
 /*Update preview in init*/
 $(function() {
@@ -39,11 +48,12 @@ $(function() {
         styleActiveLine: true,
         mode: 'javascript'
     });
+    cm.addLineClass(10, 'wrap', 'class__error')
     //Load de example number 1
     init(0);
     //Detect a change in the editor
     cm.on('change', function() {
-        updatePreview(cm.getValue(),this.zoomCounter);
+        updatePreview(cm.getValue(),this.ZoomOptions);
     });
 });
 
@@ -121,7 +131,7 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(3000, 2000, -100)
+    let viewBox = new ViewBox(000, 000, -00)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
@@ -130,16 +140,18 @@ function initializeDrawSettings() {
 Function that represents the neural network in the preview with the 
 configurable data collected from the menu
 */
-function updatePreview(content,zoomCounter) {
+function updatePreview(content,lastViewBox) {
+    this.newViewBox = lastViewBox
+    ZoomOptionstoString(this.newViewBox)
     try {
-        if(zoomCounter!==0 && zoomCounter!=='undefinded'){
-        this.zoomCounter = zoomCounter
-        }
+        //if(zoomCounter!==0 && zoomCounter!=='undefinded'){
+        //this.zoomCounter = lastViewBox
+        //}
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
             eval(code);
-
+            console.log(this.newViewBox)
             svgCode = svgController.draw(model.getModelTree());
             $('#svg').html(svgCode);
                  
@@ -151,14 +163,16 @@ function updatePreview(content,zoomCounter) {
         $('#svg').css('color', "");
         $('#svg').css('font-size', "");
         $('#preview').css('border-right', '2px solid #1b6181');
-        svg = $("svg").svgPanZoom(this.ZoomOptions);
-        svg.animationTime = 0
+        console.log(lastViewBox)
+        svg = $("svg").svgPanZoom(lastViewBox);
+        /*svg.animationTime = 0
         for (i=0;i<zoomCounter;i++){
             svg.zoomIn()
-        }
+        }*/
 
         document.getElementById("show-error-message").style.display = "none"
-   
+       // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
+
     } catch (error) {
         handleErrors(error);
         //With errors, the preview frame is colored red
@@ -238,6 +252,7 @@ function handleErrors(error) {
     } catch (e) {
         document.getElementById("show-error-message").style.display = "block"
         $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');
+        //document.getElementById('editor').style.backgroundColor = "rgb(255, 17, 0)"
     }
 }
 
@@ -610,7 +625,7 @@ class ViewBox {
     constructor(width, height, zoom) {
         this.width = width;
         this.height = height;
-        this.zoom = -zoom;
+        this.zoom = zoom;
     }
     getWidth() {
         return this.width;
@@ -2023,7 +2038,8 @@ class SvgController {
         x_min = this.x_min;
         y_max = this.y_max;
         y_min = this.y_min;
-        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\'>\n' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
+        let view = newViewBox
+        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\'preserveAspectRatio="xMidYMid meet" '+ ZoomOptionstoString(newViewBox)+'>\n' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
     }
     addFooter() {
         this.svgString += '\t </g>\n' + '</svg>';

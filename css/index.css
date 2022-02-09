@@ -1669,13 +1669,16 @@ display:block;
     display: inline-block;
     cursor: pointer;
     pointer-events: all;
+    transition: font-size 0.25s ease;
+
+    
   }
   .label:hover {
     display: inline-block;
     cursor: pointer;
     pointer-events: all;
-    font-weight: bold;
-    transition: all 0.5s ease;
+    font-size: larger;
+    transition: font-size 0.25s ease;
   }
   .spacer {
     display: inline-block;
@@ -1941,3 +1944,4 @@ display:block;
       position: absolute;
 
   }
+

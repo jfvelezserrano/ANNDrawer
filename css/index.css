@@ -1660,6 +1660,7 @@ display:block;
 
   .menu-examples:hover {
     pointer-events: all;
+    
   }
   .menu-examples-dark-mode:hover {
     pointer-events: all;
@@ -1668,6 +1669,13 @@ display:block;
     display: inline-block;
     cursor: pointer;
     pointer-events: all;
+  }
+  .label:hover {
+    display: inline-block;
+    cursor: pointer;
+    pointer-events: all;
+    font-weight: bold;
+    transition: all 0.5s ease;
   }
   .spacer {
     display: inline-block;
@@ -1684,13 +1692,13 @@ display:block;
     border-bottom: 1px solid #ff0000;
     height: 1px;
     width: 0%;
-    transition: width 0.25s ease;
+    transition: height 0.25s ease;
     transition-delay: 0.7s;
   }
   .item {
     position: relative;
-    display: inline-block;
-    margin-right: 30px;
+    display: grid;
+    margin-top: 10px;
     top: 10px;
     opacity: 0;
     transition: opacity 0.5s ease, top 0.5s ease;

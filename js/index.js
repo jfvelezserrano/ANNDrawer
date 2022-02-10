@@ -207,7 +207,7 @@ function loadMenu() {
 
     function slideMenu() {
         var activeState = $("#menu-container .menu-list").hasClass("active");
-        $("#menu-container .menu-list").animate({ left: activeState ? "-25px" : "-1500px" }, 400);
+        $("#menu-container .menu-list").animate({ left: activeState ? "-1%" : "-105%" }, 400);
     }
    
     $("#big-menu-button").click(function (event) {
@@ -371,15 +371,10 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        /*timeout = setTimeout(() => {
-            decrement(number);
-        }, speed);*/
-        let result = parseFloat(n1 - 3);
-        if (result > -360) {            
-            $('#input' + number).val(result.toFixed(0));
-        } else {
-            $('#input' + number).val(-360);
-        }
+        
+        let result = parseFloat(n1 - 8);
+        $('#input' + number).val(result % 360);
+        
     } else {
         let result = parseFloat(n1 - 0.1);
         if (result > 0) {
@@ -412,15 +407,8 @@ function increment(number) {
             $('#input' + number).val(15);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        /*timeout = setTimeout(() => {
-            increment(number);
-        }, speed);*/
-        let result = parseFloat(n1 + 3);
-        if (result < 360) {
-            $('#input' + number).val(result%360);
-        } else {
-            $('#input' + number).val(result % 360);
-        }
+        let result = parseFloat(n1 + 8);
+        $('#input' + number).val(result % 360);
     } else if (number == 20 || number == 21 || number == 22) {
         timeout = setTimeout(() => {
             increment(number);
@@ -512,7 +500,7 @@ function toggleButton() {
     updatePreview(cm.getValue(),svg.getViewBox());
 }
 
-function zoomIn(num) {
+/*function zoomIn(num) {
     if (num==2){
         zoomCounter2++;
         svg2.zoomIn()
@@ -547,7 +535,7 @@ function undo(num) {
     svg.reset()
     this.zoomCounter = 0
     }
-}
+}*/
 
 function reset(...args) {
     //Color or Font Settings

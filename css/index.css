@@ -159,7 +159,7 @@ a.button {
     z-index: 951;
     position: absolute;
     margin: 0 auto;
-    background: #000000;
+    background: #282c34;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
     overflow: auto;
@@ -168,13 +168,13 @@ a.button {
     top: 0px;
     left: 30%;
     resize: both;
-    padding: 10px;
+    padding: 3px;
     height: 90px;
 
 }
 .second-terminal {
     visibility: visible;
-    background: #000000;
+    background: #000;
     margin: 0 auto;
     position: absolute;
     overflow: auto;

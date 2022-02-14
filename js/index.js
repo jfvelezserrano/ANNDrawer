@@ -259,6 +259,9 @@ function changeModel(number) {
         case 6:
             init(5)
             break;
+        case 7:
+            init(6)
+            break;
         }
   
 }
@@ -1027,6 +1030,7 @@ function stop() {
     } 
 
     function changeTheme(){
+        
         document.body.classList.toggle('dark-mode');
         let menu_mode = document.getElementById("menu-examples").classList.value
         if (menu_mode == "menu-examples") {

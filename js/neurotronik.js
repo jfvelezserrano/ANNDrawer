@@ -48,7 +48,6 @@ $(function() {
         styleActiveLine: true,
         mode: 'javascript'
     });
-    cm.addLineClass(10, 'wrap', 'class__error')
     //Load de example number 1
     init(0);
     //Detect a change in the editor
@@ -163,12 +162,7 @@ function updatePreview(content,lastViewBox) {
         $('#svg').css('color', "");
         $('#svg').css('font-size', "");
         $('#preview').css('border-right', '2px solid #1b6181');
-        console.log(lastViewBox)
         svg = $("svg").svgPanZoom(lastViewBox);
-        /*svg.animationTime = 0
-        for (i=0;i<zoomCounter;i++){
-            svg.zoomIn()
-        }*/
 
         document.getElementById("show-error-message").style.display = "none"
        // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
@@ -383,6 +377,69 @@ var example = {
         'model.addShortcut(n3,n5);',
         '/* Example 6: Recurrent NN */\n\n' + '/* Part 1: Nodes Definition */\n\nvar n1 = new Node();\n\n/* Part 2: Neural Network */\n\n' + 'var n2 = n1.add(Input(48,32,10));\n' + 'n1.add(Conv2D(32,[10,10], [1,1], "same"));\n' +
         'n1.add(MaxPooling2D([2,2]));\n' + 'n1.add(Conv2D(64,[5,5],[1,1],"same"));\n' + 'n1.add(Conv2D(86,[5,5],[1,1],"same"));\n' + 'var n3 = n1.add(Dense(200));\n\n' + '/* Part 3: Model Definition */\n\n' + 'model.add(n1);\n' + 'model.addShortcut(n2,n3)',
+        '/* Example 7: Siamese with Shortcuts */\n'+
+        '/* Part 1: Nodes Definition */\n'+'var n1 = new Node();\n'+
+        'var n2 = new Node();\n'+
+        'var n3 = new Node();\n'+
+        'var n1a = new Node();\n'+
+        'var n1a1 = new Node()\n'+
+        'var n1a2 = new Node()\n'+
+        'var n1b = new Node();\n'+
+
+
+        '/* Part 2: Neural Network */\n'+
+
+        'n1.add(Conv2D(32,[10,10],[1,1],"same",Input(48,32,10)));\n'+
+        'n1.add(MaxPooling2D([2,2]));\n'+
+        'n1.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+        'n1.add(MaxPooling2D([2,2]));\n'+
+        'n1.add(Conv2D(72,[10,10],[1,1],"same"));\n'+
+
+        'n2.add(Input(48,32,10));\n'+
+        'n2.add(Conv2D(32,[10,10],[1,1],"same"));\n'+
+        'n2.add(MaxPooling2D([2,2]));\n'+
+        'n2.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+        'n2.add(MaxPooling2D([2,2]));\n'+
+        'n2.add(Conv2D(72,[10,10],[1,1],"same"));\n'+
+
+        'n1a.add(Input(32,32,20));\n'+
+        'n1a.add(Conv2D(32,[10,10],[1,1],"same"));\n'+
+        'n1a.add(MaxPooling2D([2,2]));\n'+
+        'n1a.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+        'n1a.add(MaxPooling2D(([2,2])));\n'+
+        'n1a.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+
+        'n1a1.add(Input(48,32,10));\n'+
+        'n1a1.add(Conv2D(32,[10,10],[1,1],"same"));\n'+
+        'n1a1.add(MaxPooling2D([2,2]));\n'+
+        'n1a1.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+        'n1a1.add(MaxPooling2D([2,2]));\n'+
+        'n1a1.add(Conv2D(72,[10,10],[1,1],"same"));\n'+
+
+        'n1b.add(Input(32,32,20));\n'+
+        'n1b.add(Conv2D(32,[10,10],[1,1],"same"));\n'+
+        'n1b.add(MaxPooling2D([2,2]));\n'+
+        'n1b.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+        'n1b.add(MaxPooling2D([2,2]));\n'+
+        'n1b.add(Conv2D(64,[5,5],[1,1],"same"));\n'+
+
+
+
+        'n3.add(Dense(150));\n'+
+        'n3.add(Dense(350));\n'+
+
+        '/* Part 3: Model Definition */\n'+
+
+        'model.add(n3);\n'+
+        'model.add(n1,n3);\n'+
+        'model.add(n2,n3);\n'+
+        'model.add(n1a,n1)\n'+
+        'model.add(n1b,n1)\n'+
+        'model.add(n1a1,n1)\n'+
+        'model.addShortcut(n1,n1a)\n'+
+        'model.addShortcut(n1,n1b)\n'+
+        'model.addShortcut(n1a,n1b)\n'+
+        'model.addShortcut(n2,n3)'
     ],
 
 }

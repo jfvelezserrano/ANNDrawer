@@ -1646,6 +1646,7 @@ display:block;
     position: absolute;
     top: 20px;
     left: 20px;
+    z-index: 1000;
   }
   .menu-examples-dark-mode{
       color: #fff;
@@ -1796,6 +1797,7 @@ display:block;
       height: 5px;
       right: 1%;
       top: 1%;      
+      z-index: 1000;
   }  
 
 
@@ -1848,6 +1850,7 @@ display:block;
     left: 1%;
     top: 97%;
     position: absolute;
+    z-index: 1000;
 }
 .checkbox-theme {
     opacity: 0;
@@ -1943,5 +1946,8 @@ display:block;
       z-index: 100000000;
       position: absolute;
 
+  }
+  .CodeMirror {
+      /*background-color: rgb(255, 204, 204);*/
   }
 

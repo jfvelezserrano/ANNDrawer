@@ -2,18 +2,13 @@
 
 /*Global variables*/
 var cm;
-var cm2;
-var cm3;
 var svgCode = "";
-var svgCode2 = "";
 var layerController;
 var x_max;
 var x_min;
 var y_max;
 var y_min;
 var indexShortcuts=0;
-var zoomCounter = 0
-var zoomCounter2 = 0
 var ZoomOptions = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
         x: 0, // the top-left corner X coordinate
@@ -24,21 +19,12 @@ var ZoomOptions = {
 }
 var newViewBox = {}
 
-
 function ZoomOptionstoString(lastViewBox){
     if (lastViewBox!==undefined){
-    console.log('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
     return('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
     }
 }
-/*var ZoomOptions2 = {
-    initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
-        x: 0, // the top-left corner X coordinate
-        y: 0, // the top-left corner Y coordinate
-        width: 1000 , // the width of the viewBox
-        height: 1000 // the height of the viewBox
-    },
-}*/
+
 
 /*Update preview in init*/
 $(function() {
@@ -141,16 +127,12 @@ configurable data collected from the menu
 */
 function updatePreview(content,lastViewBox) {
     this.newViewBox = lastViewBox
-    ZoomOptionstoString(this.newViewBox)
     try {
-        //if(zoomCounter!==0 && zoomCounter!=='undefinded'){
-        //this.zoomCounter = lastViewBox
-        //}
+
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
             eval(code);
-            console.log(this.newViewBox)
             svgCode = svgController.draw(model.getModelTree());
             $('#svg').html(svgCode);
                  
@@ -177,58 +159,6 @@ function updatePreview(content,lastViewBox) {
     }
     
     
-}
-function updatePreviewOfSplitted(content,zoomCounter) {
-    try {
-        if(zoomCounter!==0 && zoomCounter!=='undefinded'){
-        this.zoomCounter = zoomCounter
-        }
-        let settings = initializeDrawSettings();
-        if (content.includes('model')) {
-            let code = settings + content;
-            eval(code);
-
-            svgCode2 = svgController.draw(model.getModelTree());
-            $('#svg2').html(svgCode2);
-            
-            
-        } else {
-            $('#svg2').html(content);
-        }
-        //Without errors, the preview frame is blue
-        $('#svg2').css('background-color', "");
-        $('#svg2').css('color', "");
-        $('#svg2').css('font-size', "");
-        $('#preview').css('border-right', '2px solid #1b6181');
-        svg2 = $("svg").svgPanZoom(this.ZoomOptions2);
-        console.log(svg2)
-        svg2.animationTime = 0
-        // SVG PAN ZOOM DEVUELVE UN ARRAY CON LAS 2 POSICIONES
-        for (i=0;i<zoomCounter;i++){
-            svg2.zoomIn()
-        }
-   
-    } catch (error) {
-        handleErrors(error);
-        //With errors, the preview frame is colored red
-        $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
-        $('#svg').css('color', "#ce0f0f");
-        $('#svg').css('font-size', "30px");
-        $('#preview').css('border', '2px solid #ce0f0f');
-    } 
-}
-
-function deleteSplitted(){
-
-    
-
-}
-
-function deleteCm(){
-    cm2 = null
-    console.log('asdfa')
-    $('#terminal2-content div').empty()
-
 }
 
 function handleErrors(error) {
@@ -1182,9 +1112,6 @@ class RotationMatrixX {
     }
     initializeMatrix(alfa) {
 
-        //const matrix = math.matrix([[1, 0, 0], [0, Math.cos(alfa * (Math.PI / 180)),Math.sin(alfa * (Math.PI / 180))],[0,-(Math.sin(alfa * (Math.PI / 180))),Math.cos(alfa * (Math.PI / 180))]])
-
-
         this.matrix = (function(dims) {
             return allocate(dims);
         })([3, 3]);
@@ -1214,10 +1141,6 @@ class RotationMatrixY {
     }
     initializeMatrix(alfa) {
 
-        //const matrix = math.matrix([[Math.cos(alfa * (Math.PI / 180)), 0, -(Math.sin(alfa * (Math.PI / 180)))], [0, 1, 0],[Math.sin(alfa * (Math.PI / 180)), 0,Math.cos(alfa * (Math.PI / 180))]])
-
-
-
         this.matrix = (function(dims) {
             return allocate(dims);
         })([3, 3]);
@@ -1246,8 +1169,6 @@ class RotationMatrixZ {
         this.initializeMatrix(alfa);
     }
     initializeMatrix(alfa) {
-
-        //const matrix = math.matrix([[Math.cos(alfa * (Math.PI / 180)), Math.sin(alfa * (Math.PI / 180)), 0], [-(Math.sin(alfa * (Math.PI / 180))), Math.cos(alfa * (Math.PI / 180)), 0],[ 0, 0, 1]])
 
         this.matrix = (function(dims) {
             return allocate(dims);
@@ -1338,7 +1259,6 @@ class MatrixController {
         coordinates[10] = new Coordinate(c10[0][0], c10[1][0], c10[2][0]);
     }
     multiply(a, b) {
-        //console.time('multiply')
         var c = (function(dims) {
             return allocate(dims);
         })([a.length, b[0].length]);
@@ -1349,7 +1269,6 @@ class MatrixController {
                 }
             }
         }
-        //console.timeEnd('multiply')
         
         return c;
     }
@@ -1910,7 +1829,6 @@ class SvgController {
             if (this.activate) {
                 let kernelCube = modelQueue[i - 1];
                 let vertex = cube.getCoordinates()[8];
-                //let connections = this.createPyramids(kernelCube,vertex)
                 let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
                 this.drawPyramid(pyramid, kernelCube);
                 this.activate = false;
@@ -1991,10 +1909,6 @@ class SvgController {
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '" x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[0].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[0].getY() + cube.getCoordinates()[4].getY()) / 2 + '\'>' + (cube.getZ()) + '</text>\n';
         return svg;
 
-    }
-    createPyramids(kernelCube,vertex){
-        //new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()))
-        //return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
     }
     drawTextPyramid(pyramid, kernel) {
         return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
@@ -2095,7 +2009,6 @@ class SvgController {
         x_min = this.x_min;
         y_max = this.y_max;
         y_min = this.y_min;
-        let view = newViewBox
         this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\'preserveAspectRatio="xMidYMid meet" '+ ZoomOptionstoString(newViewBox)+'>\n' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
     }
     addFooter() {
@@ -2113,10 +2026,6 @@ class SvgController {
             this.matrixController.move('z', cube.getCoordinates(), this.depth);
             if (!cube.isKernel) {
                 this.depthAux = cube.getCoordinates()[0].getZ();
-            }
-            if (cube.isKernel) {
-                let cube_actual = modelQueue[i - 1];
-                this.moveKernel(cube_actual, cube);
             }
             this.updateMaxMin(cube.getCoordinates());
         }
@@ -2143,14 +2052,7 @@ class SvgController {
             }
         }
     }
-    moveKernel(cube_actual, kernel) {
-        let difY = Math.abs((cube_actual.getCoordinates()[3].getY() - kernel.getCoordinates()[3].getY()));
-        let difX = Math.abs((cube_actual.getCoordinates()[3].getX() - kernel.getCoordinates()[3].getX()));
-        let x_random = -difX + (Math.random() * (difX + difX));
-        let y_random = -difY + (Math.random() * (difY + difY));
-        //this.matrixController.move('x', kernel.getCoordinates(), x_random);
-        //this.matrixController.move('y', kernel.getCoordinates(), y_random);
-    }
+  
     calculateAverageZ(coordinates) {
         let total = coordinates.length;
         let sum = 0;

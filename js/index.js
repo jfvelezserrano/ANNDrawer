@@ -3,14 +3,21 @@
  */
 var zoom = 100;
 var svg;
-var svg2;
 var timeout;
 var speed = 100;
 var svgCode;
-var svgCode2;
-var zoomCounter = 0
-var zoomCounter2 = 0
 var newViewBox;
+//VARIABLES FOR X AND Y OF TERMINAL
+var xInicTerminal, yInicTerminal;
+var isCheckedTerm = false;
+//VARIABLES FOR X AND Y OF ROTATION
+var xInicRotation, yInicRotation;
+var isCheckedRotation = false;
+
+//FIRST USE OF X AND Y 
+localStorage.setItem('x', 0)
+localStorage.setItem('y', 0)
+
 
 
 /**
@@ -20,10 +27,11 @@ $(function () {
     loadInputs();
     loadMenu();
     loadDarkTheme();
+    loadMovility()
     $("html,body").animate({ scrollTop: 0 }, "slow");
     $("#big-menu-button").click()
     $("#big-menu-button").click()
-    
+
 
 });
 
@@ -64,16 +72,16 @@ function loadInputs() {
 
 
     $('input:radio[name=cubedimensions]').change(function () {
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
     $('input:radio[name=kerneldimensions]').change(function () {
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
     $('input:radio[name=widthlogs]').change(function () {
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
     $('input:radio[name=depthlogs]').change(function () {
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
     $('#increment17').on('mousedown mouseup mouseleave', e => {
         holdClickInc(e, 17);
@@ -129,10 +137,9 @@ function loadInputs() {
     $('#decrementRotationY').on('mousedown mouseup mouseleave', e => {
         holdClickInc(e, 18);
     });
-    
+
     /*Open file*/
     openFile();
-    openFile2();
 }
 
 /**
@@ -141,7 +148,7 @@ function loadInputs() {
  * @param {number} number 
  */
 function holdClickDec(e, number) {
-    if (e.type == "mousedown" || estaPulsadoRotation) {
+    if (e.type == "mousedown" || isCheckedRotation) {
         decrement(number);
     } else {
         stop()
@@ -154,7 +161,7 @@ function holdClickDec(e, number) {
  * @param {number} number 
  */
 function holdClickInc(e, number) {
-    if (e.type == "mousedown" || estaPulsadoRotation)  {
+    if (e.type == "mousedown" || isCheckedRotation) {
         increment(number);
     } else {
         stop()
@@ -179,7 +186,7 @@ function loadInput(number, max, min) {
             input.value = max;
         }
         $('#input' + number).val(input.value);
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
 }
 
@@ -194,7 +201,7 @@ function loadInputColor(number, css) {
     input.addEventListener('change', function () {
         body.style.setProperty(css, input.value);
         $('#input' + number).val(input.value);
-        updatePreview(cm.getValue(),svg.getViewBox());
+        updatePreview(cm.getValue(), svg.getViewBox());
     });
 }
 
@@ -209,7 +216,7 @@ function loadMenu() {
         var activeState = $("#menu-container .menu-list").hasClass("active");
         $("#menu-container .menu-list").animate({ left: activeState ? "-1%" : "-105%" }, 400);
     }
-   
+
     $("#big-menu-button").click(function (event) {
         event.stopPropagation();
         $("#hamburger-menu").toggleClass("open");
@@ -239,6 +246,22 @@ function loadMenu() {
     $('#fontButton').css('font-family', 'Calibri');
 }
 
+function loadDarkTheme() {
+    var checkbox = document.getElementById("checkbox-theme");
+    checkbox.addEventListener("change", changeTheme, false)
+}
+
+function loadMovility() {
+    var terminal = document.getElementById("paper");
+    terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
+    terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
+    document.addEventListener("mousemove", ratonMovidoTerminal, false);
+
+    document.addEventListener("mousedown", ratonPulsadoRotation, false);
+    document.addEventListener("mouseup", ratonSoltadoRotation, false);
+    document.addEventListener("mousemove", ratonMovidoRotation, false);
+}
+
 function changeModel(number) {
     switch (number) {
         case 1:
@@ -262,8 +285,8 @@ function changeModel(number) {
         case 7:
             init(6)
             break;
-        }
-  
+    }
+
 }
 
 /**
@@ -271,10 +294,10 @@ function changeModel(number) {
  */
 function saveCode(num) {
     var fname = prompt('Code File', 'neuroCode');
-    if (fname && num==1) {
+    if (fname && num == 1) {
         saveAsFile(fname, cm.getValue(), 'text/plain');
     }
-    if (fname && num==2) {
+    if (fname && num == 2) {
         saveAsFile(fname, cm2.getValue(), 'text/plain');
     }
 }
@@ -282,58 +305,33 @@ function saveCode(num) {
 /**
  * Save the SVG file generated
  */
-function saveSVG(num) {
+function saveSVG() {
     var fname = prompt('Svg File', 'neuroImage');
-    if (fname && num==1) {
-        let save = svgCode.slice(54, svgCode.length);
-        svgCode = '<svg id="svgImage" viewBox=\'' + (x_min) + ' ' + (y_min - 10) + ' ' + (x_max - x_min + 15) + ' ' + (y_max - y_min + 10) + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n' + save;
-        saveAsFile(fname, svgCode, 'image/svg+xml');
-    }
-    if (fname && num==2) {
-        let save = svgCode2.slice(54, svgCode2.length);
-        svgCode2 = '<svg id="svgImage" viewBox=\'' + (x_min) + ' ' + (y_min - 10) + ' ' + (x_max - x_min + 15) + ' ' + (y_max - y_min + 10) + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n' + save;
-        saveAsFile(fname, svgCode2, 'image/svg+xml');
-    }
+    let save = svgCode.slice(54, svgCode.length);
+    svgCode = '<svg id="svgImage" viewBox=\'' + (x_min) + ' ' + (y_min - 10) + ' ' + (x_max - x_min + 15) + ' ' + (y_max - y_min + 10) + '\' xmlns=\'http://www.w3.org/2000/svg\'>\n' + save;
+    saveAsFile(fname, svgCode, 'image/svg+xml');
+    
 }
 
 /**
  * Open the code and update the editor with the content of this file
  */
-function clickOpen(num) {
-    if (num == 1){
-        $('#openFile').val(''); // Reset de the content of input type file
-        $('#openFile').click(); // Click de hidden input type file
-    }
-    if (num == 2){
-        $('#openFile2').val(''); // Reset de the content of input type file
-        $('#openFile2').click(); // Click de hidden input type file
-    }
+function clickOpen() {
+    $('#openFile').val(''); // Reset de the content of input type file
+    $('#openFile').click(); // Click de hidden input type file    
 }
 
-function openFile(){
+function openFile() {
     $("#openFile").on('change', function () {
-            var fr = new FileReader();
-            fr.onload = function () {
-                if (fileValidation()) {
-                    cm.setValue(this.result);
-                    updatePreview(cm.getValue(),svg.getViewBox());
-                }
-            }
-            fr.readAsText(this.files[0]);
-    })
-}
-
-function openFile2(){
-    $("#openFile2").on('change', function () {
         var fr = new FileReader();
         fr.onload = function () {
             if (fileValidation()) {
-                cm2.setValue(this.result);
-                updatePreviewOfSplitted(cm2.getValue(),svg.getViewBox());
+                cm.setValue(this.result);
+                updatePreview(cm.getValue(), svg.getViewBox());
             }
         }
         fr.readAsText(this.files[0]);
-})
+    })
 }
 
 
@@ -374,10 +372,10 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        
+
         let result = parseFloat(n1 - 8);
         $('#input' + number).val(result % 360);
-        
+
     } else {
         let result = parseFloat(n1 - 0.1);
         if (result > 0) {
@@ -386,7 +384,7 @@ function decrement(number) {
             $('#input' + number).val(0);
         }
     }
-    updatePreview(cm.getValue(),svg.getViewBox());
+    updatePreview(cm.getValue(), svg.getViewBox());
 }
 
 /**
@@ -430,9 +428,8 @@ function increment(number) {
             $('#input' + number).val(1);
         }
     }
-    //console.log(svg.getViewBox())
-    
-    updatePreview(cm.getValue(),svg.getViewBox());
+
+    updatePreview(cm.getValue(), svg.getViewBox());
 }
 
 /**
@@ -500,45 +497,9 @@ function toggleButton() {
     let i = (fonts.index) % fonts.list.length;
     $('#fontButton').text(fonts.list[i]);
     $('#fontButton').css('font-family', fonts.list[i] + ', sans-serif');
-    updatePreview(cm.getValue(),svg.getViewBox());
+    updatePreview(cm.getValue(), svg.getViewBox());
 }
 
-/*function zoomIn(num) {
-    if (num==2){
-        zoomCounter2++;
-        svg2.zoomIn()
-        this.viewBox = svg2.getViewBox()
-    }
-    else{
-    zoomCounter++;
-    svg.zoomIn();
-    this.viewBox = svg.getViewBox()
-    }
-}
-
-
-function zoomOut(num) {
-    if (num==2){
-        zoomCounter2--;
-        svg2.zoomOut()
-        this.viewBox = svg2.getViewBox()
-    }
-    else{
-    zoomCounter--;
-    svg.zoomOut();
-    this.viewBox = svg.getViewBox()
-    }
-}
-
-function undo(num) {
-    if (num==2){
-
-    }
-    else{
-    svg.reset()
-    this.zoomCounter = 0
-    }
-}*/
 
 function reset(...args) {
     //Color or Font Settings
@@ -585,7 +546,7 @@ function reset(...args) {
         $('#input' + (args[0] + 1)).val(b);
         $('#input' + (args[0] + 2)).val(c);
     }
-    updatePreview(cm.getValue(),svg.getViewBox());
+    updatePreview(cm.getValue(), svg.getViewBox());
 }
 
 /**
@@ -653,8 +614,8 @@ document.onkeyup = function (e) {
 
     // Change example
     if (e.ctrlKey && e.shiftKey && theChar == 'H') {
-        let index = indexExample % example.data.length+1;
-        $('#opt'+index).click();
+        let index = indexExample % example.data.length + 1;
+        $('#opt' + index).click();
         indexExample++;
     }
 
@@ -683,76 +644,8 @@ document.onkeyup = function (e) {
         $("#big-menu-button").click();
 
     }
-
-
-
-    if (e.shiftKey){
-    switch (e.key){
-        case 'ArrowRight':
-            if (e.ctrlKey){
-                    holdClickInc(e, 17);
-                    window.alert('asdf')
-            }
-    }
 }
 
-
-    if (e.shiftKey  && e.key == 'ArrowLeft') {
-        window.alert('left key')
-    }
-    
-    if (e.shiftKey  && e.key == 'ArrowUp') {
-       // left arrow
-    }
-    if (e.shiftKey  && e.key == 'ArrowDown') {
-       // right arrow
-    }
-
-    
-}
-
-
-
-
-/**
- * Puts the preview in full screen. 
- * In the case that it is in full screen, it returns to its original size
- */
-function expandPreview() {
-    var isVisible = $(".paper").is(":visible");
-    if (isVisible) {
-        $(".paper").hide("slow");
-        $(".editorbuttons").hide("slow");
-        $(".dropdown").hide("slow");
-        $(".preview").css("width", "100%");
-        $("#btnexp").removeClass("fa fa-expand");
-        $("#btnexp").addClass("fa fa-window-maximize");
-        $(".zoombuttons").css("-webkit-transition", "all 0.75s ease-in-out");
-        $(".zoombuttons").css("-moz-transition", "all 0.75s ease-in-out");
-        $(".zoombuttons").css("-moz-transition", "all 0.75s ease-in-out");
-        $(".zoombuttons").css("-o-transition", "all 0.75s ease-in-out");
-        $(".zoombuttons").css("transition", "all 0.75s ease-in-out");
-        $(".zoombuttons").css("margin-left", "4%");
-
-        $(".title").css("-webkit-transition", "all 0.75s ease-in-out");
-        $(".title").css("-moz-transition", "all 0.75s ease-in-out");
-        $(".title").css("-moz-transition", "all 0.75s ease-in-out");
-        $(".title").css("-o-transition", "all 0.75s ease-in-out");
-        $(".title").css("transition", "all 0.75s ease-in-out");
-        $(".title").css("margin-left", "44.7%");
-        svg.setViewBox(0, 0, 2000, 2000, 0);
-    } else {
-        $(".paper").show("slow");
-        $(".editorbuttons").show("slow");
-        $(".dropdown").show("slow");
-        $(".preview").css("width", "70%");
-        $("#btnexp").removeClass("fa fa-window-maximize");
-        $("#btnexp").addClass("fa fa-expand");
-        $(".zoombuttons").css("margin-left", "30.5%");
-        $(".title").css("margin-left", "57.7%");
-        svg.setViewBox(0, 0, 1000, 1000, 0);
-    }
-}
 /**
  * Dialog box to avoid exiting the web without saving
  * 
@@ -775,334 +668,207 @@ window.onbeforeunload = function (e) {
  */
 function stop() {
     clearTimeout(timeout);
-    
+
+}
+
+function movilityTerminal() {
+    var el = document.getElementById("paper");
+    el.addEventListener("mousedown", ratonPulsadoTerminal, false);
+    el.addEventListener("mouseup", ratonSoltadoTerminal, false);
+    document.addEventListener("mousemove", ratonMovidoTerminal, false);
+
+}
+
+function ratonPulsadoTerminal(evt) {
+    //Obtener la posición de inicio
+    xInicTerminal = evt.clientX;
+    yInicTerminal = evt.clientY;
+    isCheckedTerm = true;
+    //Para Internet Explorer: Contenido no seleccionable
+    document.getElementById("paper").unselectable = true;
+}
+
+function ratonMovidoTerminal(evt) {
+    if (isCheckedTerm) {
+        //Calcular la diferencia de posición
+        var xActualTerminal = evt.clientX;
+        var yActualTerminal = evt.clientY;
+        var xIncTerminal = xActualTerminal - xInicTerminal;
+        var yIncTerminal = yActualTerminal - yInicTerminal;
+        xInicTerminal = xActualTerminal;
+        yInicTerminal = yActualTerminal;
+
+        //Establecer la nueva posición
+        var elementoTerminal = document.getElementById("paper");
+
+        var positionTerminal = getPosicion(elementoTerminal);
+        var resize = evaluateAutoResizing(positionTerminal[0], positionTerminal[1])
+
+
+        //Es necesario limitar la posicion de X e Y del ratón para ajustar a la ventana
+        let posicionfinalX = positionTerminal[0] + yIncTerminal
+        let posicionfinalY = positionTerminal[1] + xIncTerminal
+
+        //La posición entonces ya ha sido ajustada
+        if (!resize) {
+            document.getElementById("paper").style.top = (posicionfinalX) + "px";
+            document.getElementById("paper").style.left = (posicionfinalY) + "px";
+
+        }
+    }
+}
+
+function evaluateAutoResizing(top, left) {
+
+    var widthWindow = window.innerWidth;
+    var heightWindow = window.innerHeight;
+
+
+    var limitBottom = heightWindow - 150
+    var limitRight = widthWindow - 400
+    if (top > limitBottom) { resizeBottom(heightWindow); return true }
+    if (left > limitRight) { resizeRight(widthWindow, heightWindow); return true }
+    return false
+
+}
+
+function resizeBottom(height) {
+    let finalHeight = height - 300
+    let finalWidth = window.innerWidth;
+    document.getElementById("paper").style.top = (finalHeight - 25) + "px";
+    document.getElementById("paper").style.left = "0px";
+    document.getElementById("paper").style.width = (finalWidth - 25) + "px";
+    document.getElementById("paper").style.height = "300px";
+    ratonSoltadoTerminal()
+    reallocateViewButtons()
+
+}
+
+
+function resizeRight(width, height) {
+    let finalWidth = width - 400
+    document.getElementById("paper").style.top = "0px";
+    //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
+    let finalpadding = 28
+
+    document.getElementById("paper").style.left = (finalWidth - finalpadding) + "px";
+    document.getElementById("paper").style.width = "400px";
+    document.getElementById("paper").style.height = height - 25 + "px";
+    ratonSoltadoTerminal()
+
+}
+
+function ratonSoltadoTerminal() {
+    isCheckedTerm = false;
+}
+
+
+function ratonPulsadoRotation(evt) {
+    if (evt.button == 2) {
+        document.getElementById("svgImage").style.zIndex = "-100000";
+
+        xInicRotation = evt.clientX
+        yInicRotation = evt.clientY
+        isCheckedRotation = true
+        //Para Internet Explorer: Contenido no seleccionable
+        //document.getElementById("rotation").unselectable = true;          
+    }
+    else {
+        document.getElementById("rotation").style.zIndex = "-100000";
+        document.getElementById("svgImage").style.zIndex = "0";
+
+
+    }
+}
+
+function ratonMovidoRotation(evt) {
+    if (isCheckedRotation) {
+        //Calcular la diferencia de posición
+        let yOld = localStorage.getItem('y')
+
+        let xOld = localStorage.getItem('x')
+        var xActual = evt.clientX;
+        var yActual = evt.clientY;
+
+        if (xOld == 0 && yOld == 0) {
+            localStorage.setItem('x', xActual)
+            localStorage.setItem('y', yActual)
+            return
+        }
+        if (xActual < xOld) {
+            holdClickInc("", 18)
+        }
+        if (xActual > xOld) {
+            holdClickDec("", 18)
+        }
+        if (yActual < yOld) {
+            holdClickInc("", 17)
+        }
+        if (yActual > yOld) {
+            holdClickDec("", 17)
+        }
+        localStorage.setItem('x', xActual)
+        localStorage.setItem('y', yActual)
+    }
+}
+
+
+function ratonSoltadoRotation(evt) {
+    isCheckedRotation = false;
+    holdClickDec("", 18)
+    holdClickInc("", 18)
+    //document.getElementById("rotation").style.display = "none"  
+}
+
+function getPosicion(elemento) {
+    var posicion = new Array(2);
+    if (document.defaultView && document.defaultView.getComputedStyle) {
+        posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
+        posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
+    } else {
+        //Para Internet Explorer
+        posicion[0] = parseInt(elemento.currentStyle.top);
+        posicion[1] = parseInt(elemento.currentStyle.left);
+    }
+    return posicion;
+}
+
+function reallocateViewButtons() {
+    document.getElementById('viewbuttons').style.top = '50px'
+    document.getElementById('viewbuttons').style.left = '10px'
+    document.getElementById('viewbuttons').style.left = '10px'
+}
+
+function changeTheme() {
+
+    document.body.classList.toggle('dark-mode');
+    let menu_mode = document.getElementById("menu-examples").classList.value
+    if (menu_mode == "menu-examples") {
+        document.getElementById("menu-examples").classList.remove('menu-examples')
+        document.getElementById("menu-examples").classList.add('menu-examples-dark-mode')
+        document.getElementById("logo").style.display = "none"
+        document.getElementById("imglogo").style.visibility = "hidden"
+        document.getElementById("logo-dark").style.display = "block"
+        document.getElementById("imglogo-dark").style.visibility = "visible"
+        document.getElementById("big-menu-button").style.color = "#FFF"
+    } else {
+        document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode')
+        document.getElementById("menu-examples").classList.add('menu-examples')
+        document.getElementById("logo").style.display = "block"
+        document.getElementById("imglogo").style.visibility = "visible"
+        document.getElementById("logo-dark").style.display = "none"
+        document.getElementById("imglogo-dark").style.visibility = "hidden"
+        document.getElementById("big-menu-button").style.color = "#000"
+
+    }
 }
 
 
 
 
-    
 
 
-    function movilityTerminal()
 
-    {
-        var el = document.getElementById("paper");
-    
-        el.addEventListener("mousedown", ratonPulsadoTerminal, false);
-        el.addEventListener("mouseup", ratonSoltadoTerminal, false);
-        document.addEventListener("mousemove", ratonMovidoTerminal, false);
-
-    }
-
-    var xInic, yInic;
-    var estaPulsado = false;
-
-    var xInicTerminal, yInicTerminal;
-    var estaPulsadoTerminal = false;
-    
-    
-    var xInicRotation, yInicRotation;
-    var estaPulsadoRotation = false;
-    
-
-
-    
-
-    function ratonPulsadoTerminal(evt) { 
-        //Obtener la posición de inicio
-        xInicTerminal = evt.clientX;
-        yInicTerminal = evt.clientY;    
-        estaPulsadoTerminal = true;
-        //Para Internet Explorer: Contenido no seleccionable
-        document.getElementById("paper").unselectable = true;
-    }
-    
-    
-    
-    function ratonPulsadoRotation(evt) { 
-        console.log("pillando el rotation")
-        if (evt.button == 2) {
-            document.getElementById("svgImage").style.zIndex = "-100000";          
-            //document.getElementById("rotation").style.zIndex = "0";          
-
-            console.log('ee')
-            xInicRotation = evt.clientX
-            yInicRotation = evt.clientY
-            estaPulsadoRotation = true   
-            //Para Internet Explorer: Contenido no seleccionable
-            //document.getElementById("rotation").unselectable = true;          
-        }
-        else {
-            document.getElementById("rotation").style.zIndex = "-100000"; 
-            document.getElementById("svgImage").style.zIndex = "0";          
-         
-
-        }
-    }
-    
-   
-    
-
-
-    function ratonMovidoTerminal(evt) {
-        if(estaPulsadoTerminal) {
-            //Calcular la diferencia de posición
-            var xActualTerminal = evt.clientX;
-            var yActualTerminal = evt.clientY;    
-            var xIncTerminal = xActualTerminal-xInicTerminal;
-            var yIncTerminal = yActualTerminal-yInicTerminal;
-            xInicTerminal = xActualTerminal;
-            yInicTerminal = yActualTerminal;
-            
-            //Establecer la nueva posición
-            var elementoTerminal = document.getElementById("paper");
-
-            var positionTerminal = getPosicion(elementoTerminal);
-            var resize = evaluateAutoResizing(positionTerminal[0],positionTerminal[1])
-            
-
-            //Es necesario limitar la posicion de X e Y del ratón para ajustar a la ventana
-            let posicionfinalX = positionTerminal[0] + yIncTerminal
-            let posicionfinalY = positionTerminal[1] + xIncTerminal
-            
-            //La posición entonces ya ha sido ajustada
-            if (!resize){
-                document.getElementById("paper").style.top = (posicionfinalX) + "px";
-                document.getElementById("paper").style.left = (posicionfinalY) + "px";
-                
-            }
-        }
-    }
-
-
-    function loadInputColor(number, css) {
-        var body = document.querySelector('body');
-        var input = document.getElementById('input' + number);
-        input.addEventListener('change', function () {
-            body.style.setProperty(css, input.value);
-            $('#input' + number).val(input.value);
-            updatePreview(cm.getValue(),svg.getViewBox());
-        });
-    }
-
-    function evaluateAutoResizing(top,left) {
-
-        var widthWindow = window.innerWidth;
-        var heightWindow = window.innerHeight;
-        
-
-        var limitBottom = heightWindow - 150
-        var limitRight = widthWindow - 400
-        if (top>limitBottom){resizeBottom(heightWindow); return true}
-        if (left>limitRight){resizeRight(widthWindow,heightWindow); return true}
-        return false
-
-    }
-    
-    function resizeBottom(height) {
-        let finalHeight = height - 300
-        let finalWidth = window.innerWidth;
-        document.getElementById("paper").style.top = (finalHeight -25) + "px";
-        document.getElementById("paper").style.left = "0px";
-        document.getElementById("paper").style.width = (finalWidth -25) + "px";
-        document.getElementById("paper").style.height = "300px";
-        ratonSoltadoTerminal()
-        reallocateViewButtons()
-
-    }
-
-    
-    function resizeRight(width,height) {
-        let finalWidth = width - 400
-        document.getElementById("paper").style.top = "0px";
-        //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
-        let finalpadding = 28
-        
-        document.getElementById("paper").style.left = (finalWidth-finalpadding) + "px";
-        document.getElementById("paper").style.width = "400px";
-        document.getElementById("paper").style.height = height - 25 + "px";
-        ratonSoltadoTerminal()
-        
-    }
-    
-    function ratonSoltado(evt) {
-        estaPulsado = false;
-        
-    }
-    
-    function ratonSoltadoTerminal(evt) {
-        estaPulsadoTerminal = false;
-        
-    }
-    
-    
-    function getPosicion(elemento) {
-        var posicion = new Array(2);
-        if(document.defaultView && document.defaultView.getComputedStyle) {
-            posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
-            posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
-        } else {
-            //Para Internet Explorer
-            posicion[0] = parseInt(elemento.currentStyle.top);             
-            posicion[1] = parseInt(elemento.currentStyle.left);               
-        }      
-        return posicion;
-    }
-    
-    
-    
-    
-    
-    
-    function split(){
-
-        let splitted = document.getElementById("preview-firstSplit").classList.value
-        if (splitted == "checked"){
-            
-            document.getElementById('preview').style.width = "100%"
-            document.getElementById('preview-firstSplit').classList.remove('checked')
-            document.getElementById('preview-firstSplit').classList.add('preview-firstSplit')
-            updatePreviewOfSplitted(cm.getValue(),svg.getViewBox())
-            resizeBottom()
-            //deleteExamples()
-            deleteCm()
-            deleteSplitted()
-        }else {
-            document.getElementById('preview').style.width = "50%"
-            document.getElementById('preview-firstSplit').classList.remove('preview-firstSplit')
-            document.getElementById('preview-firstSplit').classList.add('checked')
-            
-
-
-            updatePreviewOfSplitted(cm.getValue(),this.zoomCounter)
-            createNewCm()
-            resizeBottomSplitted()
-            createNewExamples()
-            reallocateOptions()
-
-        }
-        
-    }
-
-    function reallocateOptions() {
-
-        //REALLOCATE THE VIEW BUTTONS AND ALLOWING THE HIDDEN BE VISIBLE
-        reallocateViewButtons()
-        document.getElementById('viewbuttons2').classList.remove('viewbuttons2')
-        document.getElementById('viewbuttons2').classList.add('viewbuttons2-splitted')
-
-        //ALLOWING THE HIDDEN BUTTONS BE VISIBLE
-        document.getElementById('zoombuttons2').classList.remove('zoombuttons2')
-        document.getElementById('zoombuttons2').classList.add('zoombuttons2-splitted')
-
-    }
-
-    function reallocateViewButtons() {
-        document.getElementById('viewbuttons').style.top = '50px'
-        document.getElementById('viewbuttons').style.left = '10px'
-        document.getElementById('viewbuttons').style.left = '10px'
-    }
-    
-    function resizeBottomSplitted(){
-        //Resizing first terminal
-        document.getElementById("paper").style.top = (window.innerHeight - 222) + "px";
-        document.getElementById("paper").style.left = "0px";
-        document.getElementById("paper").style.width = "48%";
-        document.getElementById("paper").style.height = "200px";
-        //Resizing second terminal
-        document.getElementById("second-terminal").style.top = (window.innerHeight - 222) + "px";
-        document.getElementById("second-terminal").style.left = "0px";
-        document.getElementById("second-terminal").style.width = "96%";
-        document.getElementById("second-terminal").style.height = "200px";
-    }
-
-    function createNewExamples(){
-        return ;
-    }
-
-    function loadDarkTheme() {
-        var checkbox = document.getElementById("checkbox-theme");
-        checkbox.addEventListener("change", changeTheme, false)
-        //document.getElementById("rotation").style.display = "none"  
-
-        
-    } 
-
-    function changeTheme(){
-        
-        document.body.classList.toggle('dark-mode');
-        let menu_mode = document.getElementById("menu-examples").classList.value
-        if (menu_mode == "menu-examples") {
-            document.getElementById("menu-examples").classList.remove('menu-examples') 
-            document.getElementById("menu-examples").classList.add('menu-examples-dark-mode')
-            document.getElementById("logo").style.display = "none"
-            document.getElementById("imglogo").style.visibility = "hidden"
-            document.getElementById("logo-dark").style.display = "block"
-            document.getElementById("imglogo-dark").style.visibility = "visible"
-            document.getElementById("big-menu-button").style.color = "#FFF"
-        }else{
-            document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode') 
-            document.getElementById("menu-examples").classList.add('menu-examples')
-            document.getElementById("logo").style.display = "block"
-            document.getElementById("imglogo").style.visibility = "visible"
-            document.getElementById("logo-dark").style.display = "none"
-            document.getElementById("imglogo-dark").style.visibility = "hidden"
-            document.getElementById("big-menu-button").style.color = "#000"
-            
-        }
-    }
-
-    function rotation(){
-        window.alert('asd')
-    }
-
-    function ratonSoltadoRotation(evt) {
-        estaPulsadoRotation = false;
-        holdClickDec("", 18)
-        holdClickInc("", 18)  
-        //document.getElementById("rotation").style.display = "none"  
-    }
-
-
-    localStorage.setItem('x',0)
-    localStorage.setItem('y',0)
-
-    function ratonMovidoRotation(evt) {
-        if(estaPulsadoRotation) {
-            //Calcular la diferencia de posición
-            let yOld = localStorage.getItem('y')
-            
-            let xOld = localStorage.getItem('x')
-            var xActual = evt.clientX;
-            var yActual = evt.clientY; 
-
-            if (xOld == 0 && yOld == 0) {
-                localStorage.setItem('x',xActual)
-                localStorage.setItem('y',yActual)
-                return
-            
-            }
-            if(xActual<xOld){
-                holdClickInc("", 18)
-            }
-            if(xActual>xOld){
-                holdClickDec("", 18)
-            }
-            if(yActual<yOld){
-                holdClickInc("", 17)
-            }
-            if(yActual>yOld){
-                holdClickDec("", 17)
-            }
-
-            localStorage.setItem('x',xActual)
-            localStorage.setItem('y',yActual)
-
-         
-            
-        }
-    }
 
 
 

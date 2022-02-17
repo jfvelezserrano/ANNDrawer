@@ -462,7 +462,19 @@
     
     
         </div>
-    
+        <div class="showbutton" id="showbutton">
+            <button class="hide__button" onclick="hideOptions()">-</button>
+        </div>
+        <div class="velocity__rotation">
+            
+            <div id="hiddeButton">
+                <button class="hide__button" onclick="hideOptions()">&#10005</button>
+                <a class="velocity__title" >ROTATION VELOCITY</a>
+                <button class="rotationbutton" onclick="incrementVelocityRotation()">+</button>
+                <button class="rotationbutton" onclick="decrementVelocityRotation()">-</button>
+                <button class="rotationbuttonReset" onclick="resetView()">RESET</button>
+            </div>
+        </div>
     
         <div class="menu-examples" id="menu-examples">
             <div class="label">EXAMPLES</div>

@@ -148,7 +148,7 @@ a.button {
 
 /*Editor Notebook Style*/
 .box {
-    visibility: hidden;
+    resize: both;
   }
 .box2 {
     visibility: hidden;
@@ -195,8 +195,71 @@ a.button {
     resize: both;
 }
 
+.velocity__rotation {
+    position: absolute;
+    top: 20px;
+    right: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100000;
+    
+}
 
+.rotationbutton {
+    margin-left: 0px;
+    padding: 10;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 20%;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+    width:  20px;
+    transition: all 1s;
+}
+.rotationbuttonReset {
+    margin-left: 30%;
+    padding: 10;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10%;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+    width:  19%;
+    transition: all 1s;
+}
+.rotationbutton:hover{
+    background-color: rgb(94, 252, 239);
+}
+.rotationbuttonReset:hover{
+    background-color: rgb(94, 252, 239);
+}
 
+.velocity__title{
+    margin-right: 10px;
+}
+.hide__button{
+    background-color: white;
+    margin: 0;
+    color: black;
+    border: none;
+    height: 100%;
+    align-items: center;
+    bottom: 90%;
+    transition: all 1s;
+
+}
+.showbutton{
+    display: none;
+    position: absolute;
+    right: 80%;
+    top: 20px;
+    z-index: 100000;
+    transition: all 1s;
+
+}
 
 
 .paper-content {
@@ -1929,7 +1992,7 @@ display:block;
       transition: 1s;
   }
 
-  .show-error-message::before{
+  /*.show-error-message::before{
       content: "";
       width: 0;
       height: 0;
@@ -1938,7 +2001,7 @@ display:block;
       border-top: 20px solid red ;
       border-left: 18px solid transparent ;
       border-right:18px solid transparent ;
-  }
+  }*/
 
   .rotation {
       width: 100%;

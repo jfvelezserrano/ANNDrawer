@@ -14,6 +14,17 @@ var isCheckedTerm = false;
 var xInicRotation, yInicRotation;
 var isCheckedRotation = false;
 
+var velocityOfRotation = 8
+
+const ZoomOptionsView = {
+    initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
+        x: 0, // the top-left corner X coordinate
+        y: 0, // the top-left corner Y coordinate
+        width: 1000 , // the width of the viewBox
+        height: 1000 // the height of the viewBox
+    },
+}
+
 //FIRST USE OF X AND Y 
 localStorage.setItem('x', 0)
 localStorage.setItem('y', 0)
@@ -373,7 +384,7 @@ function decrement(number) {
         }
     } else if (number == 17 || number == 18 || number == 19) {
 
-        let result = parseFloat(n1 - 8);
+        let result = parseFloat(n1 - velocityOfRotation);
         $('#input' + number).val(result % 360);
 
     } else {
@@ -408,7 +419,7 @@ function increment(number) {
             $('#input' + number).val(15);
         }
     } else if (number == 17 || number == 18 || number == 19) {
-        let result = parseFloat(n1 + 8);
+        let result = parseFloat(n1 + velocityOfRotation);
         $('#input' + number).val(result % 360);
     } else if (number == 20 || number == 21 || number == 22) {
         timeout = setTimeout(() => {
@@ -834,9 +845,8 @@ function getPosicion(elemento) {
 }
 
 function reallocateViewButtons() {
-    document.getElementById('viewbuttons').style.top = '50px'
-    document.getElementById('viewbuttons').style.left = '10px'
-    document.getElementById('viewbuttons').style.left = '10px'
+    document.getElementById('viewbuttons').style.top = '20px'
+    document.getElementById('viewbuttons').style.left = '40%'
 }
 
 function changeTheme() {
@@ -860,6 +870,39 @@ function changeTheme() {
         document.getElementById("imglogo-dark").style.visibility = "hidden"
         document.getElementById("big-menu-button").style.color = "#000"
 
+    }
+}
+
+function incrementVelocityRotation() {
+    if (velocityOfRotation == 16){
+        return
+    }
+    velocityOfRotation ++;
+}
+function decrementVelocityRotation() {
+    if (velocityOfRotation == 1){
+        return
+    }
+    velocityOfRotation --;
+}
+
+function resetView() {
+    updatePreview(cm.getValue(),this.ZoomOptionsView)
+    velocityOfRotation = 8
+    $('#input17').val(30);
+    $('#input18').val(60);
+    $('#input19').val(0);
+}
+
+function hideOptions() {
+    let display = document.getElementById('hiddeButton').style.display 
+    if (display=='none'){
+        document.getElementById('hiddeButton').style.display ="block"
+        document.getElementById('showbutton').style.display ="none"
+    }
+    else{
+        document.getElementById('hiddeButton').style.display ="none"
+        document.getElementById('showbutton').style.display ="block"
     }
 }
 

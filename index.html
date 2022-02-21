@@ -18,7 +18,7 @@
     <script src="js/neurotronik.js"></script>
     <script src="js/jquery.svg.pan.zoom.js"></script>
     <script src="js/javascript.js"></script>
-    <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
+    <!--<script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>-->
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" type="image/png" href="images/favicon.PNG" />
@@ -434,9 +434,9 @@
     
     
     
-        <div class="dock__buttons" >
-            <button class="dock__button" onclick="resizeRight(window.innerWidth,window.innerHeight)"><span class="iconify" data-icon="mdi:dock-right" ></span></button>
-            <button class="dock__button" onclick="resizeBottom(window.innerHeight)"><span class="iconify" data-icon="mdi:dock-bottom" ></span></button>
+        <div class="dock__buttons" id="dock__buttons" >
+            <button class="dock__button" id="dock" onclick="resizeRight(window.innerWidth,window.innerHeight)"><i class="gg-dock-right"></i></button>
+            <button class="dock__button" id="dock2" onclick="resizeBottom(window.innerHeight)"><i class="gg-dock-bottom"></i></button>
            
         </div>
     
@@ -468,7 +468,7 @@
     
         </div>
         <div class="showbutton" id="showbutton">
-            <button class="hide__button" onclick="hideOptions()">-</button>
+            <button class="hide__button" id="hide2" onclick="hideOptions()">-</button>
         </div>
         <div class="velocity__rotation" id="velocity__rotation">
             

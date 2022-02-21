@@ -203,6 +203,8 @@ a.button {
     justify-content: center;
     align-items: center;
     z-index: 100000;
+    transition: all 1s;
+
 }
 
 .rotationbutton {
@@ -240,7 +242,7 @@ a.button {
     margin-right: 10px;
 }
 .hide__button{
-    background-color: white;
+    background: none;
     margin: 0;
     color: black;
     border: none;
@@ -259,6 +261,8 @@ a.button {
     top: 20px;
     z-index: 100000;
     transition: all 1s;
+    background: none;
+    color: black;
 
 }
 
@@ -2039,3 +2043,30 @@ display:block;
 
   }
 
+  
+.gg-dock-bottom {
+    display: block;
+    transform: scale(var(--ggs,1));
+   position: relative;
+  box-sizing: border-box;
+  width: 20px;
+    height: 16px;
+    border: 2px solid;
+    border-bottom-width: 6px
+
+}
+
+.darkMode {
+    color: white;
+}
+
+.gg-dock-right {
+    display: block;
+    transform: scale(var(--ggs,1));
+    position: relative;
+    box-sizing: border-box;
+    width: 20px;
+    height: 16px;
+    border: 2px solid;
+    border-right-width: 6px
+   } 

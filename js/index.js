@@ -14,7 +14,7 @@ var isCheckedTerm = false;
 var xInicRotation, yInicRotation;
 var isCheckedRotation = false;
 
-var velocityOfRotation = 8
+var velocityOfRotation = 6
 
 const ZoomOptionsView = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
@@ -262,8 +262,9 @@ function loadDarkTheme() {
     checkbox.addEventListener("change", changeTheme, false)
 }
 
+
 function loadMovility() {
-    var terminal = document.getElementById("paper");
+    var terminal = document.getElementById("paper-content");
     terminal.addEventListener("mousedown", ratonPulsadoTerminal, false);
     terminal.addEventListener("mouseup", ratonSoltadoTerminal, false);
     document.addEventListener("mousemove", ratonMovidoTerminal, false);
@@ -887,11 +888,12 @@ function decrementVelocityRotation() {
 }
 
 function resetView() {
-    updatePreview(cm.getValue(),this.ZoomOptionsView)
-    velocityOfRotation = 8
     $('#input17').val(30);
     $('#input18').val(60);
     $('#input19').val(0);
+    updatePreview(cm.getValue(),this.ZoomOptionsView)
+    velocityOfRotation = 6
+    
 }
 
 function hideOptions() {

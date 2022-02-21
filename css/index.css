@@ -148,7 +148,7 @@ a.button {
 
 /*Editor Notebook Style*/
 .box {
-    resize: both;
+    /*resize: both;*/
   }
 .box2 {
     visibility: hidden;
@@ -263,6 +263,7 @@ a.button {
 
 
 .paper-content {
+    z-index: 952;
     position: relative;
     top: 0px;
     right: 0;

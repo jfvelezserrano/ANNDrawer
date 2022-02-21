@@ -39,6 +39,7 @@ $(function () {
     loadMenu();
     loadDarkTheme();
     loadMovility()
+    hideOptionsBeginning()
     $("html,body").animate({ scrollTop: 0 }, "slow");
     $("#big-menu-button").click()
     $("#big-menu-button").click()
@@ -274,6 +275,11 @@ function loadMovility() {
     document.addEventListener("mousemove", ratonMovidoRotation, false);
 }
 
+function hideOptionsBeginning(){
+    setTimeout(function(){
+        hideOptions()
+    },3000)
+}
 function changeModel(number) {
     switch (number) {
         case 1:
@@ -899,12 +905,19 @@ function resetView() {
 function hideOptions() {
     let display = document.getElementById('hiddeButton').style.display 
     if (display=='none'){
-        document.getElementById('hiddeButton').style.display ="block"
-        document.getElementById('showbutton').style.display ="none"
+        document.getElementById('velocity__rotation').classList.toggle('move')
+  
+            document.getElementById('hiddeButton').style.display ="block"
+            document.getElementById('showbutton').style.display ="none"
+            
+
     }
     else{
-        document.getElementById('hiddeButton').style.display ="none"
-        document.getElementById('showbutton').style.display ="block"
+        document.getElementById('velocity__rotation').classList.toggle('move')
+        setTimeout(function(){
+            document.getElementById('hiddeButton').style.display ="none"
+            document.getElementById('showbutton').style.display ="block"
+        },1000)
     }
 }
 

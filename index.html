@@ -18,6 +18,7 @@
     <script src="js/neurotronik.js"></script>
     <script src="js/jquery.svg.pan.zoom.js"></script>
     <script src="js/javascript.js"></script>
+    <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" type="image/png" href="images/favicon.PNG" />
@@ -433,7 +434,11 @@
     
     
     
-    
+        <div class="dock__buttons" >
+            <button class="dock__button" onclick="resizeRight(window.innerWidth,window.innerHeight)"><span class="iconify" data-icon="mdi:dock-right" ></span></button>
+            <button class="dock__button" onclick="resizeBottom(window.innerHeight)"><span class="iconify" data-icon="mdi:dock-bottom" ></span></button>
+           
+        </div>
     
         <div class="logo" id="logo">
             <img src="/images/logo.png" class="imglogo" id="imglogo">
@@ -465,10 +470,10 @@
         <div class="showbutton" id="showbutton">
             <button class="hide__button" onclick="hideOptions()">-</button>
         </div>
-        <div class="velocity__rotation">
+        <div class="velocity__rotation" id="velocity__rotation">
             
             <div id="hiddeButton">
-                <button class="hide__button" onclick="hideOptions()">&#10005</button>
+                <button class="hide__button" id="hide__button"  onclick="hideOptions()">&#10005</button>
                 <a class="velocity__title" >ROTATION VELOCITY</a>
                 <button class="rotationbutton" onclick="incrementVelocityRotation()">+</button>
                 <button class="rotationbutton" onclick="decrementVelocityRotation()">-</button>

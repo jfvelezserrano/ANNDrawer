@@ -840,6 +840,7 @@ function ratonSoltadoRotation(evt) {
 
 function getPosicion(elemento) {
     var posicion = new Array(2);
+
     if (document.defaultView && document.defaultView.getComputedStyle) {
         posicion[0] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("top"))
         posicion[1] = parseInt(document.defaultView.getComputedStyle(elemento, null).getPropertyValue("left"));
@@ -848,6 +849,7 @@ function getPosicion(elemento) {
         posicion[0] = parseInt(elemento.currentStyle.top);
         posicion[1] = parseInt(elemento.currentStyle.left);
     }
+
     return posicion;
 }
 

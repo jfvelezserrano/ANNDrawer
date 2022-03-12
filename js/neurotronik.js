@@ -32,8 +32,12 @@ $(function() {
     cm = CodeMirror.fromTextArea(editor, {
         lineNumbers: true,
         styleActiveLine: true,
-        mode: 'javascript'
-    });
+        mode: 'javascript',
+        closeBrackets: true,
+        gutters: ["error"],
+        lint: true,
+        extraKeys: {"Tab": "autocomplete"}
+    })
     //Load de example number 1
     init(0);
     //Detect a change in the editor

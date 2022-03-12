@@ -152,10 +152,10 @@ function updatePreview(content,lastViewBox) {
     } catch (error) {
         handleErrors(error);
         //With errors, the preview frame is colored red
-        $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
-        $('#svg').css('color', "#ce0f0f");
-        $('#svg').css('font-size', "30px");
-        $('#preview').css('border-right', '2px solid #ce0f0f');
+       // $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
+        //$('#svg').css('color', "#ce0f0f");
+       // $('#svg').css('font-size', "30px");
+     //   $('#preview').css('border-right', '2px solid #ce0f0f');
     }
     
     

@@ -1989,20 +1989,19 @@ display:block;
   }
 
   .show-error-message {
-      z-index: 10000;
-      font-size: small;
-      color: white;
-      border: 1px solid red;
-      border-radius: 10px;
-      position: absolute;
-      background-color: red;
-      box-shadow:20px 20px 50px 15px black;
-      padding: 5px 20px ;
-      bottom: 2%;
-      left: 40%;
-      display: none;
-      width: 50%;
-      transition: 1s;
+    z-index: 10000;
+    font-size: xx-small;
+    color: red;
+    border: 1px solid red;
+    border-radius: 10px;
+    position: absolute;
+    
+    padding: 5px 10px ;
+    bottom: 5%;
+    right:  1%;
+    display: none;
+    width: auto;
+    transition: 1s;
   }
 
   /*.show-error-message::before{

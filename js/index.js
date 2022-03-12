@@ -753,9 +753,9 @@ function evaluateAutoResizing(top, left) {
 function resizeBottom(height) {
     let finalHeight = height - 300
     let finalWidth = window.innerWidth;
-    document.getElementById("paper").style.top = (finalHeight - 25) + "px";
+    document.getElementById("paper").style.top = (finalHeight - 13) + "px";
     document.getElementById("paper").style.left = "0px";
-    document.getElementById("paper").style.width = (finalWidth - 25) + "px";
+    document.getElementById("paper").style.width = (finalWidth - 13) + "px";
     document.getElementById("paper").style.height = "300px";
     ratonSoltadoTerminal()
     reallocateViewButtons()
@@ -767,11 +767,11 @@ function resizeRight(width, height) {
     let finalWidth = width - 400
     document.getElementById("paper").style.top = "0px";
     //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
-    let finalpadding = 28
+    let finalpadding = 13
 
     document.getElementById("paper").style.left = (finalWidth - finalpadding) + "px";
     document.getElementById("paper").style.width = "400px";
-    document.getElementById("paper").style.height = height - 25 + "px";
+    document.getElementById("paper").style.height = height - 13 + "px";
     ratonSoltadoTerminal()
 
 }
@@ -859,12 +859,6 @@ function reallocateViewButtons() {
 function changeTheme() {
 
     document.body.classList.toggle('dark-mode');
-    document.getElementById('hide__button').classList.toggle('darkMode')
-    document.getElementById('velocity__rotation').classList.toggle('darkMode')
-    document.getElementById('dock2').classList.toggle('darkMode')
-    document.getElementById('dock').classList.toggle('darkMode')
-    document.getElementById('hide2').classList.toggle('darkMode')
-
     let menu_mode = document.getElementById("menu-examples").classList.value
     if (menu_mode == "menu-examples") {
         document.getElementById("menu-examples").classList.remove('menu-examples')
@@ -882,6 +876,7 @@ function changeTheme() {
         document.getElementById("logo-dark").style.display = "none"
         document.getElementById("imglogo-dark").style.visibility = "hidden"
         document.getElementById("big-menu-button").style.color = "#000"
+
     }
 }
 

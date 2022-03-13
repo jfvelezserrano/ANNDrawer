@@ -1350,6 +1350,27 @@ class Arrow {
     }
 }
 
+class PointerArrow {
+    constructor(vertex1,vertex2){
+        this.vertex1 = vertex1
+        this.vertex2 = vertex2
+        this.coordinates = new Array();
+        this.coordinates.push(new Coordinate(vertex1.getX(), vertex1.getY(), vertex1.getZ()));
+        this.coordinates.push(new Coordinate(vertex2.getX(), vertex2.getY(), vertex2.getZ()));
+    }
+    getCoordinates() {
+        return this.coordinates;
+    }
+    getVertex1(){
+        return this.vertex1
+    }
+    getVertex2(){
+        return this.vertex2
+    }
+    
+}
+
+
 /*CUBE CLASS*/
 
 /**
@@ -1946,6 +1967,31 @@ class SvgController {
             this.lineTo(lastCube, firstCube);
         }
     }
+    drawPointer(pointerArrow,mode) {
+        let svg = '';
+        let size;
+        let xorig = pointerArrow.getVertex1().getX()
+        let yorig = pointerArrow.getVertex1().getY()
+        let xdest = pointerArrow.getVertex2().getX()
+        let ydest = pointerArrow.getVertex2().getY()
+        size = Math.abs(yorig - ydest) / 6
+        yorig = ydest + size
+        //Orig is different for inverted and normal
+        let yorig2 = ydest - size
+        if (mode =="inverted"){
+
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest+5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+        
+        }
+        else{
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig-5) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig+5) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+        }
+        let z = this.calculateAverageZ(pointerArrow.getCoordinates());
+        let sn = new SortNode(svg, z);
+        this.drawOrderList.push(sn);
+    }
     drawShortcuts(shortcuts) {
         for (let shortcut of shortcuts) {
             let cube1 = shortcut[0].getLastCube();
@@ -1964,7 +2010,8 @@ class SvgController {
             this.drawArrow(new Arrow(vertex1, vertex2));
             this.drawArrow(new Arrow(vertex2, vertex3));
             this.drawArrow(new Arrow(vertex4, vertex3));
-        }
+            this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
+            this.drawPointer(new PointerArrow(vertex3,vertex4),"normal")        }
         indexShortcuts=0;
     }
     selectColor(cube) {

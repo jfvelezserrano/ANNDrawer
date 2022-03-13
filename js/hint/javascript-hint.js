@@ -157,6 +157,22 @@
           gatherCompletions(global);
         forEach(keywords, maybeAdd);
       }
+      switch (found[0]) {
+        case "MaxPooling2D":
+          found[0] += "([2,2])"  
+        break;
+        case "Input":
+          found[0] += "(48,32,10)"  
+        break
+        case "Conv2D":
+          found[0] += "(32,[10,10], [1,1], 'same')"  
+        break
+        case "Dense":
+          found[0] += "(200)"
+        break 
+        default:
+          break;
+      }
       return found;
     }
   });

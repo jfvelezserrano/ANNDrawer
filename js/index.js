@@ -859,6 +859,11 @@ function reallocateViewButtons() {
 function changeTheme() {
 
     document.body.classList.toggle('dark-mode');
+    document.getElementById('hide__button').classList.toggle('darkMode')
+    document.getElementById('velocity__rotation').classList.toggle('darkMode')
+    document.getElementById('dock2').classList.toggle('darkMode')
+    document.getElementById('dock').classList.toggle('darkMode')
+    document.getElementById('hide2').classList.toggle('darkMode')
     let menu_mode = document.getElementById("menu-examples").classList.value
     if (menu_mode == "menu-examples") {
         document.getElementById("menu-examples").classList.remove('menu-examples')
@@ -868,6 +873,7 @@ function changeTheme() {
         document.getElementById("logo-dark").style.display = "block"
         document.getElementById("imglogo-dark").style.visibility = "visible"
         document.getElementById("big-menu-button").style.color = "#FFF"
+        document.getElementById('menu-container').style.color  = "#000"
     } else {
         document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode')
         document.getElementById("menu-examples").classList.add('menu-examples')

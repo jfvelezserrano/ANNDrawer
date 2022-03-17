@@ -909,6 +909,10 @@ function resetView() {
     
 }
 
+function getViewBox(){
+    return svg.getViewBox()
+}
+
 function hideOptions() {
     let display = document.getElementById('hiddeButton').style.display 
     if (display=='none'){

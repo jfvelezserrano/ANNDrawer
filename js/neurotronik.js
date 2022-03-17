@@ -19,6 +19,15 @@ var ZoomOptions = {
 }
 var newViewBox = {}
 
+let showReduce = false
+let totalNodes = 1;
+var reducedNodes = [] //Stores the nodes reduced
+
+
+
+let counterNodes = 1; //Allows to give to each node a unique numeration
+let nodesMap = new Map() //Allows to get the nodes in a implementation with the best performance 
+
 function ZoomOptionstoString(lastViewBox){
     if (lastViewBox!==undefined){
     return('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
@@ -46,19 +55,6 @@ $(function() {
     });
 });
 
-function createNewCm(){
-    cm2 = CodeMirror.fromTextArea(editor2, {
-        lineNumbers: true,
-        styleActiveLine: true,
-        mode: 'javascript'
-    });
-    //Load de example number 1
-    init2(0);
-    //Detect a change in the editor
-    cm2.on('change', function() {
-        updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
-    });
-}
 
 /*initializes the style  settings for the neural network.
 The layercontroller class, drawsettings, svg controller and model are started*/
@@ -130,6 +126,9 @@ Function that represents the neural network in the preview with the
 configurable data collected from the menu
 */
 function updatePreview(content,lastViewBox) {
+    nodesMap.clear()
+    counterNodes = 1
+    totalNodes = 1
     this.newViewBox = lastViewBox
     try {
 
@@ -137,9 +136,9 @@ function updatePreview(content,lastViewBox) {
         if (content.includes('model')) {
             let code = settings + content;
             eval(code);
-            svgCode = svgController.draw(model.getModelTree());
+            svgCode = svgController.draw(model.getModelTree(),true);
             $('#svg').html(svgCode);
-                 
+            counterTotalNodes(model.getModelTree())    
         } else {
             $('#svg').html(content);
         }
@@ -149,7 +148,7 @@ function updatePreview(content,lastViewBox) {
         $('#svg').css('font-size', "");
         $('#preview').css('border-right', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(lastViewBox);
-
+        createReducers()
         document.getElementById("show-error-message").style.display = "none"
        // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
 
@@ -163,6 +162,23 @@ function updatePreview(content,lastViewBox) {
     }
     
     
+}
+
+function createReducers(){
+    let svgButtons = ""
+    if(totalNodes>1){
+        svgButtons += "<button onclick='setReducers()' style='display: grid;'>SHOW REDUCERS</button>"
+    }
+    if(showReduce){
+        nodesMap.forEach( (_,index) =>{
+                if (index!==1){
+                    let number = index - 1
+                    svgButtons += "<button style='display: grid;' onclick='setReducedNode(" + index + ")'>N" + number + "</button></div>"
+                }    
+            }
+        )      
+    }
+    $('#nodesToBeReduced').html(svgButtons)
 }
 
 function handleErrors(error) {
@@ -384,11 +400,8 @@ var example = {
  */
 function init(number) {
     cm.setValue(example.data[number]);
+    reducedNodes = []
     updatePreview(cm.getValue(),this.zoomCounter);
-}
-function init2(number) {
-    cm2.setValue(example.data[number]);
-    updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
 }
 
 /**
@@ -1479,6 +1492,14 @@ class Node {
         this.parent = new Array();
         this.children = new Array();
         this.actualCube = null;
+        this.reduced = false
+        this.numeration = null;
+    }
+    getReduced(){
+        return this.reduced
+    }
+    setReduced(bool){  
+        this.reduced = bool
     }
     getCubeList() {
         return this.cubeList;
@@ -1491,6 +1512,12 @@ class Node {
     }
     setLastCube(cube) {
         this.lastCube = cube;
+    }
+    setNumeration(number){
+        this.numeration = number
+    }
+    getNumeration(){
+        return this.numeration
     }
     setLast() {
         if (!this.getCubeList().length == 0) {
@@ -1610,6 +1637,53 @@ function createAuxNode(cube){
     node.setActualCube(node.getLastCube());
     return node;
 }
+function setReducedNode(number){
+    reducedNodes[number] = !reducedNodes[number]
+    updatePreview(cm.getValue(), getViewBox())
+}
+
+function assignNumeration(node){
+    for (let child of node.getChildren()){
+        if (child.getNumeration() == null){
+            counterNodes++
+            child.setNumeration(counterNodes)
+            nodesMap.set(counterNodes,child)
+        }
+        assignNumeration(child)
+    }
+
+}
+
+function counterTotalNodes(modelTree){
+    for (let nodeList of modelTree.getNodes()) 
+        for (let parent of nodeList) 
+            for (let child of parent.getChildren()){
+                totalNodes++;
+            }
+}
+
+
+function setNodesReducedOnTree(modelTree){
+    let node = modelTree.getRoot()
+    nodesMap.set(counterNodes,node)
+    assignNumeration(node)   
+    for (let i=1; i<reducedNodes.length; i++){
+        if (reducedNodes[i]){
+            
+            nodesMap.get(i).setReduced(true)
+        }
+    }
+}
+
+function setReducers(){
+    showReduce = !showReduce
+    updatePreview(cm.getValue(),getViewBox())
+}
+
+function getViewBox(){
+    return svg.getViewBox()
+}
+
 
 function createAuxNodeList(cubes){
     let node = new Node();
@@ -1633,6 +1707,9 @@ class NeuralNetworkTree {
     }
     isEmpty() {
         return (this.root == null);
+    }
+    getRoot(){
+        return this.root
     }
     isLeaf(node) {
         return (node.getChildren() === null) || (node.getChildren().length == 0);
@@ -1789,21 +1866,27 @@ class SvgController {
         this.matrixController = new MatrixController(this.drawSettings.getAlfa().getAlfaX(), this.drawSettings.getAlfa().getAlfaY(), this.drawSettings.getAlfa().getAlfaZ());
     }
     draw(modelTree) {
+        setNodesReducedOnTree(modelTree)
         this.shiftTree(modelTree);
-        this.calculateImageCenter();
+        this.calculateImageCenter();     
         for (let nodes of modelTree.getNodes()) {
-            for (let node of nodes) {
-                this.drawNode(node);
+                for (let node of nodes){
+                    if (node.getReduced()) {
+                        this.drawNode(node,true)
+                    }
+                    else this.drawNode(node,false);
             }
         }
         this.drawUnions(modelTree);
         this.drawJumps(modelTree.getJumps());
-        this.drawShortcuts(modelTree.getShortcuts());
+        this.drawShortcuts(modelTree.getShortcuts())
+        if (showReduce) this.drawReducer(modelTree)
         this.drawOrderList.sort((a, b) => (a.getZ() > b.getZ()) ? -1 : 1)
         this.addHeader();
         for (let n of this.drawOrderList) {
             this.svgString += n.getSvgString();
         }
+        this.svgString += this.aux
         this.addFooter();
         return this.svgString;
     }
@@ -1846,36 +1929,44 @@ class SvgController {
             this.length = 0;
         }
     }
-    drawNode(node) {
-        let modelQueue = node.getCubeList();
-        for (let i = 0; i < modelQueue.length; i++) {
-            let cube = modelQueue[i];
-            this.doTransformations(cube.getCoordinates());
-            if (this.activate) {
-                let kernelCube = modelQueue[i - 1];
-                let vertex = cube.getCoordinates()[8];
-                let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
-                this.drawPyramid(pyramid, kernelCube);
-                this.activate = false;
-            }
-            if (i !== modelQueue.length - 1) {
-                if (modelQueue[i + 1].isDenseLayer) {
-                    this.drawSingleCube(cube);
+    drawNode(node,reduced) {
+        if(!reduced){
+            let modelQueue = node.getCubeList();
+            for (let i = 0; i < modelQueue.length; i++) {
+                let cube = modelQueue[i];
+                this.doTransformations(cube.getCoordinates());
+                if (this.activate) {
+                    let kernelCube = modelQueue[i - 1];
+                    let vertex = cube.getCoordinates()[8];
+                    let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
+                    this.drawPyramid(pyramid, kernelCube);
+                    this.activate = false;
                 }
+                if (i !== modelQueue.length - 1) {
+                    if (modelQueue[i + 1].isDenseLayer) {
+                        this.drawSingleCube(cube);
+                    }
+                }
+                if (i === modelQueue.length - 1 || cube.isDenseLayer) {
+                    this.drawSingleCube(cube);
+                } else {
+                    this.drawCube(cube);
+                }
+                if (cube.isDenseLayer && i != 0) {
+                    let lastCube = modelQueue[i - 1];
+                    this.lineTo(lastCube, cube);
+                }
+                if (cube.isKernel) {
+                    this.activate = true;
+                }
+                this.updateMaxMin(cube.getCoordinates());
             }
-            if (i === modelQueue.length - 1 || cube.isDenseLayer) {
-                this.drawSingleCube(cube);
-            } else {
-                this.drawCube(cube);
-            }
-            if (cube.isDenseLayer && i != 0) {
-                let lastCube = modelQueue[i - 1];
-                this.lineTo(lastCube, cube);
-            }
-            if (cube.isKernel) {
-                this.activate = true;
-            }
-            this.updateMaxMin(cube.getCoordinates());
+        }else{
+            let cube = node.getCubeList()
+            let actualcube = cube[2]
+            this.doTransformations(actualcube.getCoordinates())
+            this.drawCube(actualcube,reduced)
+            return actualcube
         }
     }
     drawSingleCube(cube) {
@@ -1900,12 +1991,21 @@ class SvgController {
             for (let parent of nodeList) {
                 for (let child of parent.getChildren()) {
                     let lastCube = child.getLastCube();
-                    this.lineTo(lastCube, parent.getCubeList()[0]);
+                    if (child.getReduced() && parent.getReduced()) 
+                        this.lineTo(child.getCubeList()[2], parent.getCubeList()[2])
+                    else if(child.getReduced())
+                            this.lineTo(child.getCubeList()[2], parent.getCubeList()[0])
+                    else if (parent.getReduced())
+                            this.lineTo(lastCube, parent.getCubeList()[2]);                                    
+                    else    
+                            this.lineTo(lastCube, parent.getCubeList()[0]);
+                    
                 }
             }
         }
     }
-    drawCube(cube) {
+
+    drawCube(cube,reduced) {
         let color = this.selectColor(cube);
         let opacity = this.selectOpacity(cube);
         let svg = '';
@@ -1915,18 +2015,28 @@ class SvgController {
         svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + '\'/>' + '\n';
         svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
         svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + '\'/>' + '\n';
-        if (cube.isKernel) {
-            this.aux = svg + this.aux;
-            let sn = new SortNode(this.aux, this.z);
-            this.drawOrderList.push(sn);
-        } else {
+        if(reduced){
             if (this.drawSettings.isActivateLayerDimensions()) {
                 svg += this.drawText(cube);
             }
-            this.aux = svg;
-            this.z = this.calculateAverageZ(cube.getCoordinates());
+            this.aux = svg + this.aux;
+            let sn = new SortNode(this.aux, this.calculateAverageZ(cube.getCoordinates()));
+            this.drawOrderList.push(sn);
+        }else{
+            if (cube.isKernel) {
+                this.aux = svg + this.aux;
+                let sn = new SortNode(this.aux, this.z);
+                this.drawOrderList.push(sn);
+            } else {
+                if (this.drawSettings.isActivateLayerDimensions()) {
+                    svg += this.drawText(cube);
+                }
+                this.aux = svg;
+                this.z = this.calculateAverageZ(cube.getCoordinates());
+            }
         }
     }
+
     drawText(cube) {
         let svg = '';
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"  x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[6].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[4].getY() + cube.getCoordinates()[6].getY()) / 2 + '\'>' + (cube.getY()) + '</text>\n';
@@ -1935,6 +2045,24 @@ class SvgController {
         return svg;
 
     }
+
+    drawNodeReducersText(arr,vertex1,vertex2,node){
+
+        let x = (vertex1.getX() + vertex2.getX()) 
+        if ((vertex1.getX()>0 && vertex2.getX()>0) || (vertex1.getX()<0 && vertex2.getX()<0) ) 
+            x = x/2
+        let y = (vertex1.getY() + vertex2.getY()) - 8
+        if ((vertex1.getY()>0 && vertex2.getY()>0) || (vertex1.getY()<0 && vertex2.getY()<0)) 
+            y = y/2
+        let svg = '';
+        svg += 'buscame'
+        let showedNumber = node.getNumeration()-1 
+        svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"  x=\'' + x + '\' y=\'' + y + '\'> Node ' + showedNumber+ '</text>\n';
+        let z = this.calculateAverageZ(arr.getCoordinates());
+        let sn = new SortNode(svg, z);
+        this.drawOrderList.push(sn);
+    }
+
     drawTextPyramid(pyramid, kernel) {
         return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
     }
@@ -1967,6 +2095,26 @@ class SvgController {
             this.lineTo(lastCube, firstCube);
         }
     }
+    drawReducer(){
+        nodesMap.forEach( (node, key)  => {
+            if(key!==1){
+                let cube1 = node.getCubeList()[0]
+                let cube2 = node.getLastCube()
+                let vertex1 = cube1.getCoordinates()[10];
+                let vertex2 = cube1.getCoordinates()[9];
+                let vertex3 = cube2.getCoordinates()[9];
+                let vertex4 = cube2.getCoordinates()[10];
+                if (!node.getReduced()){
+                    this.drawArrow(new Arrow(vertex1, vertex2));
+                    this.drawArrow(new Arrow(vertex2, vertex3));
+                    this.drawArrow(new Arrow(vertex4, vertex3));
+                    this.drawNodeReducersText(new Arrow(vertex2,vertex3),vertex2,vertex3,node);
+                }
+                }
+            }
+        )
+    }
+
     drawPointer(pointerArrow,mode) {
         let svg = '';
         let size;
@@ -1994,9 +2142,9 @@ class SvgController {
     }
     drawShortcuts(shortcuts) {
         for (let shortcut of shortcuts) {
+            if(!shortcut[0].getReduced() && !shortcut[1].getReduced()){
             let cube1 = shortcut[0].getLastCube();
             let cube2 = shortcut[1].getLastCube();
-
             let vertex1 = cube1.getCoordinates()[10];
             let vertex2 = cube1.getCoordinates()[9];
             let vertex3 = cube2.getCoordinates()[9];
@@ -2012,7 +2160,9 @@ class SvgController {
             this.drawArrow(new Arrow(vertex4, vertex3));
             this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
             this.drawPointer(new PointerArrow(vertex3,vertex4),"normal")        }
+            
         indexShortcuts=0;
+            }
     }
     selectColor(cube) {
         if (cube.isKernel) {

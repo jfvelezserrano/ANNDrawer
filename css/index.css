@@ -1052,7 +1052,12 @@ a.button {
     width: 3.6rem;
 }
 
-
+.nodesReduced {
+    top: 40%;
+    display: grid;
+    position: absolute;
+    z-index: 1000000;
+}
 
 
 

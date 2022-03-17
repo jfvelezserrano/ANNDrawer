@@ -606,6 +606,8 @@ function saveAsFile(filename, data, type) {
  * CTRL+Shift+'-' = Zoom Out
  * CTRL+Shift+'BACKSPACE' = Undo Image
  * CTRL+Shift+Q = Open Menu
+ * CTRL+Shift+ ArrowRigt = Terminal to Right
+ * CTRL+Shift+ ArrowDown = Terminal to Bottom
  */
 var indexExample = 1;
 document.onkeyup = function (e) {
@@ -662,6 +664,12 @@ document.onkeyup = function (e) {
         $("#big-menu-button").click();
 
     }
+
+    if(e.ctrlKey && e.key == 'ArrowRight')
+        resizeRight(window.innerWidth,window.innerHeight)
+
+    if(e.ctrlKey && e.key == 'ArrowDown')
+        resizeBottom(window.innerHeight)
 }
 
 /**

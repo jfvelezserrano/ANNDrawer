@@ -148,7 +148,6 @@ a.button {
 
 /*Editor Notebook Style*/
 .box {
-    /*resize: both;*/
   }
 .box2 {
     visibility: hidden;
@@ -162,7 +161,7 @@ a.button {
     background: #282c34;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
-    overflow: auto;
+    overflow: hidden;
     display: inline-block;
     cursor: pointer;
     top: 0px;
@@ -172,33 +171,12 @@ a.button {
     height: 90px;
 
 }
-.second-terminal {
-    visibility: visible;
-    background: #000;
-    margin: 0 auto;
-    position: absolute;
-    overflow: auto;
-    display: inline-block;
-    height: 90px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
-    cursor: pointer;
-    resize: both;
-    padding: 10px;
-    bottom: 10px;;
-    
 
-}
-
-.resizable-container {
-    overflow: auto;
-    resize: both;
-}
 
 .velocity__rotation {
     position: absolute;
     top: 20px;
-    right: 70%;
+    right: 80%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -220,15 +198,15 @@ a.button {
     transition: all 1s;
 }
 .rotationbuttonReset {
-    margin-left: 30%;
-    padding: 10;
+    margin-left: 0%;
+    
     background-color: white;
     border: 1px solid black;
     border-radius: 10%;
     justify-content: center;
     align-items: center;
     height: 20px;
-    width:  19%;
+    width:  100%;
     transition: all 1s;
 }
 .rotationbutton:hover{
@@ -1464,7 +1442,7 @@ a.button {
     cursor: pointer;
 }
 
-.input-number-decrement:active, .input-number-increment:active {
+.input-number-decrement:active, .input-number-increment:active, .input-number-rotation:active {
     background: #ddd;
 }
 
@@ -1475,6 +1453,34 @@ a.button {
 
 .input-number-increment {
     border-radius: 0 4px 4px 0;
+}
+.velocityDiv{
+    display: flex;
+    margin-left: 18%;
+    margin-bottom: 2%;
+
+}
+.radiotitleVelocity{
+    margin-bottom: 2%;
+    font-weight: bold;
+    font-size: 15px;
+    display: grid;
+    align-items: center;
+    align-self: center;
+}
+.input-number-rotation {
+    border: 1px solid #ccc;
+    height: 30px;
+    user-select: none;
+    display: inline-block;
+    width: 30px;
+    line-height: 30px;
+    background: #f1f1f1;
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px 4px 4px 4px;
 }
 
 .color-opacity {

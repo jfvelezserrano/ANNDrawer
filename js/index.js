@@ -14,7 +14,7 @@ var isCheckedTerm = false;
 var xInicRotation, yInicRotation;
 var isCheckedRotation = false;
 
-var velocityOfRotation = 6
+var velocityOfRotation = 3
 
 const ZoomOptionsView = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
@@ -38,8 +38,9 @@ $(function () {
     loadInputs();
     loadMenu();
     loadDarkTheme();
+    getBrowser()
     loadMovility()
-    hideOptionsBeginning()
+    //hideOptionsBeginning()
     $("html,body").animate({ scrollTop: 0 }, "slow");
     $("#big-menu-button").click()
     $("#big-menu-button").click()
@@ -275,11 +276,11 @@ function loadMovility() {
     document.addEventListener("mousemove", ratonMovidoRotation, false);
 }
 
-function hideOptionsBeginning(){
+/*function hideOptionsBeginning(){
     setTimeout(function(){
         hideOptions()
     },3000)
-}
+}*/
 function changeModel(number) {
     switch (number) {
         case 1:
@@ -481,7 +482,11 @@ function checkInputNumber(number) {
         if (n1 < 0) {
             $('#input' + number).val(0);
         }
-    } else {
+    } 
+    else if(number==25){
+        $('#input' + number).val(velocityOfRotation)
+    }
+    else {
         let n1 = parseFloat(input.val());
         if (n1 > 1) {
             $('#input' + number).val(1);
@@ -912,30 +917,31 @@ function resetView() {
     $('#input18').val(60);
     $('#input19').val(0);
     updatePreview(cm.getValue(),this.ZoomOptionsView)
-    velocityOfRotation = 6
-    
-}
-
-function hideOptions() {
-    let display = document.getElementById('hiddeButton').style.display 
-    if (display=='none'){
-        document.getElementById('velocity__rotation').classList.toggle('move')
-  
-            document.getElementById('hiddeButton').style.display ="block"
-            document.getElementById('showbutton').style.display ="none"
-            
-
-    }
-    else{
-        document.getElementById('velocity__rotation').classList.toggle('move')
-        setTimeout(function(){
-            document.getElementById('hiddeButton').style.display ="none"
-            document.getElementById('showbutton').style.display ="block"
-        },1000)
-    }
+    getBrowser()   
 }
 
 
+
+function getBrowser(){
+    // Firefox 1.0+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+
+    // Internet Explorer 6-11
+    var isIE = !!document.documentMode;
+
+    // Edge 20+
+    var isEdge = !isIE && !!window.StyleMedia;
+
+
+    if(isSafari) velocityOfRotation= 6
+    else if(isFirefox) velocityOfRotation = 2
+    else if(isEdge) velocityOfRotation = 4
+    //The default velocity for Chrome and others browsers less common
+    else velocityOfRotation = 3
+}
 
 
 

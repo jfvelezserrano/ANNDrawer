@@ -251,6 +251,15 @@
                         <li>
                             <div class="rangediv">
                                 <div>
+                                    <span class="radiotitleVelocity">Velocity of rotation</span>
+                                    <div class="velocityDiv">
+                                    <div class="input-number-rotation" onclick="decrementVelocityRotation()">–</div>
+                                    
+                                    <div  class="input-number-rotation" onclick="incrementVelocityRotation()">+</div>
+                                </div>
+    
+                                </div>
+                                <div>
                                     <span class="radiotitle3">X-Axis</span>
                                     <div id="decrement17" class="input-number-decrement">–</div><input
                                         onblur="checkInputNumber(17);" class="input-number" id="input17" name="input17"
@@ -472,13 +481,9 @@
         </div>
         <div class="velocity__rotation" id="velocity__rotation">
             
-            <div id="hiddeButton">
-                <button class="hide__button" id="hide__button"  onclick="hideOptions()">&#10005</button>
-                <a class="velocity__title" >ROTATION VELOCITY</a>
-                <button class="rotationbutton" onclick="incrementVelocityRotation()">+</button>
-                <button class="rotationbutton" onclick="decrementVelocityRotation()">-</button>
-                <button class="rotationbuttonReset" onclick="resetView()">RESET</button>
-            </div>
+            
+                <button class="rotationbuttonReset" onclick="resetView()">RESET SVG</button>
+            
         </div>
     
         <div class="menu-examples" id="menu-examples">

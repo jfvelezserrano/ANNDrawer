@@ -168,16 +168,16 @@ function handleErrors(error) {
         let b = a.split(":");
         if (b[0] > 10) {
             let line = b[0] - 10;
-            $('#svg').html('Line: ' + line + '<p>' + error + '</p>');
+            document.getElementById("show-error-message").style.display = "block"
+            $('#show-error-message').html('Line: ' + line + '<p>' + error + '</p>');
         } else {
-            $('#svg').html('Bad Configuration-Check the Settings: ' + '<p>' + error + '</p>');
+            document.getElementById("show-error-message").style.display = "block"
+            $('#show-error-message').html('Bad Configuration-Check the Settings: ' + '<p>' + error + '</p>');
         }
 
     } catch (e) {
         document.getElementById("show-error-message").style.display = "block"
-        $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');
-        //document.getElementById('editor').style.backgroundColor = "rgb(255, 17, 0)"
-    }
+        $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');    }
 }
 
 

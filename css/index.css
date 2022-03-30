@@ -147,8 +147,7 @@ a.button {
 }
 
 /*Editor Notebook Style*/
-.box {
-  }
+
 .box2 {
     visibility: hidden;
   }
@@ -999,10 +998,8 @@ a.button {
 .icon-button2 {
     position: relative;
     cursor: pointer;
-    font-size: 2.0rem;
-    height: 3.6rem;
     font-size: 12px;
-    
+    height: 3.6rem;    
     text-align: center;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -1067,7 +1064,7 @@ a.button {
 .zoombuttons {
     position: absolute;
     left: 10px;
-    font-size: 16px;;
+    font-size: 16px;
     margin-right: 8px;
     top: 22vw;
     display: grid;
@@ -1080,7 +1077,7 @@ a.button {
 .zoombuttons2-splitted {
     position: absolute;
     right: 0;
-    font-size: 16px;;
+    font-size: 16px;
     margin-right: 8px;
     top: 22vw;
     display: grid;
@@ -1696,9 +1693,8 @@ display:block;
     margin-top: 8px;
 }
 
-.part4 {
-    
-}
+ 
+
 
 
 
@@ -2027,9 +2023,6 @@ display:block;
       z-index: 100000000;
       position: absolute;
 
-  }
-  .CodeMirror {
-      /*background-color: rgb(255, 204, 204);*/
   }
 
   .dock__buttons {   

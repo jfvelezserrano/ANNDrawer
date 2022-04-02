@@ -42,19 +42,7 @@ $(function() {
     });
 });
 
-function createNewCm(){
-    cm2 = CodeMirror.fromTextArea(editor2, {
-        lineNumbers: true,
-        styleActiveLine: true,
-        mode: 'javascript'
-    });
-    //Load de example number 1
-    init2(0);
-    //Detect a change in the editor
-    cm2.on('change', function() {
-        updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
-    });
-}
+
 
 /*initializes the style  settings for the neural network.
 The layercontroller class, drawsettings, svg controller and model are started*/
@@ -116,7 +104,7 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(000, 000, -00)
+    let viewBox = new ViewBox(000, 000,-00)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
@@ -1578,7 +1566,7 @@ class Node {
 
 function createAuxNode(cube){
     let node = new Node();
-    cubes = new Array();
+    let cubes = new Array();
     cubes.push(cube);
     node.setCubeList(cubes);
     node.setLastCube(cube);

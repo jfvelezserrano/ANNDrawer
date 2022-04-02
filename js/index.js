@@ -14,7 +14,7 @@ var isCheckedTerm = false;
 var xInicRotation, yInicRotation;
 var isCheckedRotation = false;
 
-var velocityOfRotation = 6
+var velocityOfRotation = 3
 
 const ZoomOptionsView = {
     initialViewBox: { // the initial viewBox, if null or undefined will try to use the viewBox set in the svg tag. Also accepts string in the format "X Y Width Height"
@@ -38,8 +38,9 @@ $(function () {
     loadInputs();
     loadMenu();
     loadDarkTheme();
+    getBrowser()
     loadMovility()
-    hideOptionsBeginning()
+    //hideOptionsBeginning()
     $("html,body").animate({ scrollTop: 0 }, "slow");
     $("#big-menu-button").click()
     $("#big-menu-button").click()
@@ -275,11 +276,7 @@ function loadMovility() {
     document.addEventListener("mousemove", ratonMovidoRotation, false);
 }
 
-function hideOptionsBeginning(){
-    setTimeout(function(){
-        hideOptions()
-    },3000)
-}
+
 function changeModel(number) {
     switch (number) {
         case 1:
@@ -481,7 +478,11 @@ function checkInputNumber(number) {
         if (n1 < 0) {
             $('#input' + number).val(0);
         }
-    } else {
+    } 
+    else if(number==25){
+        $('#input' + number).val(velocityOfRotation)
+    }
+    else {
         let n1 = parseFloat(input.val());
         if (n1 > 1) {
             $('#input' + number).val(1);
@@ -606,6 +607,8 @@ function saveAsFile(filename, data, type) {
  * CTRL+Shift+'-' = Zoom Out
  * CTRL+Shift+'BACKSPACE' = Undo Image
  * CTRL+Shift+Q = Open Menu
+ * CTRL+Shift+ ArrowRigt = Terminal to Right
+ * CTRL+Shift+ ArrowDown = Terminal to Bottom
  */
 var indexExample = 1;
 document.onkeyup = function (e) {
@@ -662,6 +665,12 @@ document.onkeyup = function (e) {
         $("#big-menu-button").click();
 
     }
+
+    if(e.ctrlKey && e.key == 'ArrowRight')
+        resizeRight(window.innerWidth,window.innerHeight)
+
+    if(e.ctrlKey && e.key == 'ArrowDown')
+        resizeBottom(window.innerHeight)
 }
 
 /**
@@ -753,9 +762,9 @@ function evaluateAutoResizing(top, left) {
 function resizeBottom(height) {
     let finalHeight = height - 300
     let finalWidth = window.innerWidth;
-    document.getElementById("paper").style.top = (finalHeight - 25) + "px";
+    document.getElementById("paper").style.top = (finalHeight - 13) + "px";
     document.getElementById("paper").style.left = "0px";
-    document.getElementById("paper").style.width = (finalWidth - 25) + "px";
+    document.getElementById("paper").style.width = (finalWidth - 13) + "px";
     document.getElementById("paper").style.height = "300px";
     ratonSoltadoTerminal()
     reallocateViewButtons()
@@ -767,11 +776,11 @@ function resizeRight(width, height) {
     let finalWidth = width - 400
     document.getElementById("paper").style.top = "0px";
     //Tenemos que restar el padding que hay actualmente a los lados para que se ajuste completamente a la derecha
-    let finalpadding = 28
+    let finalpadding = 13
 
     document.getElementById("paper").style.left = (finalWidth - finalpadding) + "px";
     document.getElementById("paper").style.width = "400px";
-    document.getElementById("paper").style.height = height - 25 + "px";
+    document.getElementById("paper").style.height = height - 13 + "px";
     ratonSoltadoTerminal()
 
 }
@@ -866,7 +875,6 @@ function changeTheme() {
     document.getElementById('dock2').classList.toggle('darkMode')
     document.getElementById('dock').classList.toggle('darkMode')
     document.getElementById('hide2').classList.toggle('darkMode')
-
     let menu_mode = document.getElementById("menu-examples").classList.value
     if (menu_mode == "menu-examples") {
         document.getElementById("menu-examples").classList.remove('menu-examples')
@@ -876,6 +884,7 @@ function changeTheme() {
         document.getElementById("logo-dark").style.display = "block"
         document.getElementById("imglogo-dark").style.visibility = "visible"
         document.getElementById("big-menu-button").style.color = "#FFF"
+        document.getElementById('menu-container').style.color  = "#000"
     } else {
         document.getElementById("menu-examples").classList.remove('menu-examples-dark-mode')
         document.getElementById("menu-examples").classList.add('menu-examples')
@@ -884,6 +893,7 @@ function changeTheme() {
         document.getElementById("logo-dark").style.display = "none"
         document.getElementById("imglogo-dark").style.visibility = "hidden"
         document.getElementById("big-menu-button").style.color = "#000"
+
     }
 }
 
@@ -905,34 +915,35 @@ function resetView() {
     $('#input18').val(60);
     $('#input19').val(0);
     updatePreview(cm.getValue(),this.ZoomOptionsView)
-    velocityOfRotation = 6
-    
+    getBrowser()   
 }
 
 function getViewBox(){
     return svg.getViewBox()
 }
 
-function hideOptions() {
-    let display = document.getElementById('hiddeButton').style.display 
-    if (display=='none'){
-        document.getElementById('velocity__rotation').classList.toggle('move')
-  
-            document.getElementById('hiddeButton').style.display ="block"
-            document.getElementById('showbutton').style.display ="none"
-            
 
-    }
-    else{
-        document.getElementById('velocity__rotation').classList.toggle('move')
-        setTimeout(function(){
-            document.getElementById('hiddeButton').style.display ="none"
-            document.getElementById('showbutton').style.display ="block"
-        },1000)
-    }
+
+function getBrowser(){
+    // Firefox 1.0+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+
+    // Internet Explorer 6-11
+    var isIE = !!document.documentMode;
+
+    // Edge 20+
+    var isEdge = !isIE && !!window.StyleMedia;
+
+
+    if(isSafari) velocityOfRotation= 6
+    else if(isFirefox) velocityOfRotation = 2
+    else if(isEdge) velocityOfRotation = 4
+    //The default velocity for Chrome and others browsers less common
+    else velocityOfRotation = 3
 }
-
-
 
 
 

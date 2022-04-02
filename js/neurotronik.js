@@ -116,7 +116,7 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(000, 000, -00)
+    let viewBox = new ViewBox(000, 000,-00)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
@@ -155,10 +155,10 @@ function updatePreview(content,lastViewBox) {
     } catch (error) {
         handleErrors(error);
         //With errors, the preview frame is colored red
-        $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
-        $('#svg').css('color', "#ce0f0f");
-        $('#svg').css('font-size', "30px");
-        $('#preview').css('border-right', '2px solid #ce0f0f');
+       // $('#svg').css('background-color', "rgba(228, 122, 36, 0.2)");
+        //$('#svg').css('color', "#ce0f0f");
+       // $('#svg').css('font-size', "30px");
+     //   $('#preview').css('border-right', '2px solid #ce0f0f');
     }
     
     
@@ -188,16 +188,16 @@ function handleErrors(error) {
         let b = a.split(":");
         if (b[0] > 10) {
             let line = b[0] - 10;
-            $('#svg').html('Line: ' + line + '<p>' + error + '</p>');
+            document.getElementById("show-error-message").style.display = "block"
+            $('#show-error-message').html('Line: ' + line + '<p>' + error + '</p>');
         } else {
-            $('#svg').html('Bad Configuration-Check the Settings: ' + '<p>' + error + '</p>');
+            document.getElementById("show-error-message").style.display = "block"
+            $('#show-error-message').html('Bad Configuration-Check the Settings: ' + '<p>' + error + '</p>');
         }
 
     } catch (e) {
         document.getElementById("show-error-message").style.display = "block"
-        $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');
-        //document.getElementById('editor').style.backgroundColor = "rgb(255, 17, 0)"
-    }
+        $('#show-error-message').html('Badly defined variable or function.  --> ' + error + '</p>' + '<p> The svg keeps the shape before the errors. </p>');    }
 }
 
 
@@ -1630,7 +1630,7 @@ class Node {
 
 function createAuxNode(cube){
     let node = new Node();
-    cubes = new Array();
+    let cubes = new Array();
     cubes.push(cube);
     node.setCubeList(cubes);
     node.setLastCube(cube);

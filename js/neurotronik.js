@@ -116,10 +116,12 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(000, 000,-00)
+    let viewBox = new ViewBox(0, 0, 0)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
+
+//module.exports = initializeDrawSettings;
 
 /*
 Function that represents the neural network in the preview with the 
@@ -135,7 +137,10 @@ function updatePreview(content,lastViewBox) {
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
+            console.log(content)
             eval(code);
+            console.log("------------")
+            console.log(model)
             svgCode = svgController.draw(model.getModelTree(),true);
             $('#svg').html(svgCode);
             counterTotalNodes(model.getModelTree())    
@@ -1119,6 +1124,7 @@ function Concatenate(nodes) {
     throw new Error("The Concatenate layer is poorly defined: (Invalid number of arguments.)<p> Example: Concatenate([x1,x2]) with 1 argument.</p>");
 }
 
+
 /*MATRICES*/
 /**
  * Rotation Matrix in axis X
@@ -1304,6 +1310,9 @@ class Model {
         return this.modelTree;
     }
     add$1(x1) {
+        if (x1.getReduced())
+            throw new Error("The root node can't be reduced");
+
         this.modelTree.addRoot(x1);
     }
     add$2(child, parent) {
@@ -1481,6 +1490,8 @@ class Pyramid {
     }
 }
 
+
+
 /*NODE CLASS*/
 /**
  * Tree element that contains the set of layers represented as cubic figures
@@ -1539,6 +1550,10 @@ class Node {
     setActualCube(cube) {
         this.actualCube = cube;
     }
+    reduce(){
+        this.setReduced(true)
+    }
+
     add(input) {
         if (input instanceof InputLayer) {
             for (let cube of this.cubeList) {

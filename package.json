@@ -1,0 +1,22 @@
+{
+  "name": "anndrawer",
+  "version": "1.0.0",
+  "description": "## Collaborators - Marcos Ruiz Muñoz and José F. Vélez Serrano",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfvelezserrano/ANNDrawer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jfvelezserrano/ANNDrawer/issues"
+  },
+  "homepage": "https://github.com/jfvelezserrano/ANNDrawer#readme",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}

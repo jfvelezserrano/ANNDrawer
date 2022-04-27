@@ -637,6 +637,7 @@ document.onkeyup = function (e) {
     if (e.ctrlKey && e.shiftKey && theChar == 'H') {
         let index = indexExample % example.data.length + 1;
         $('#opt' + index).click();
+        console.log(index)
         indexExample++;
     }
 

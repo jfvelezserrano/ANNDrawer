@@ -23,6 +23,7 @@ let showReduce = false
 let totalNodes = 1;
 var reducedNodes = [] //Stores the nodes reduced
 
+var shortcutsNumber = []
 
 
 let counterNodes = 1; //Allows to give to each node a unique numeration
@@ -154,6 +155,7 @@ function updatePreview(content,lastViewBox) {
         $('#preview').css('border-right', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(lastViewBox);
         createReducers()
+        addOptionsShortcuts(model.getModelTree())
         document.getElementById("show-error-message").style.display = "none"
        // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
 
@@ -168,6 +170,19 @@ function updatePreview(content,lastViewBox) {
     
     
 }
+
+function addOptionsShortcuts(model){
+    let shorts = model.getShortcuts().length
+    let svgButtons = ''
+    if (shorts!=0){
+        for (i=0; i<shorts; i++){
+            svgButtons += "<button style='display: grid;' onclick='changeShortcut(" + i + ")'>CLICK TO CURVE SHORTCUT -> " + i + "</button></div>"
+            shortcutsNumber.push(false)
+        }    
+        $('#shortcuts').html(svgButtons)
+    }
+}
+
 
 function createReducers(){
     let svgButtons = ""
@@ -1656,6 +1671,10 @@ function setReducedNode(number){
     reducedNodes[number] = !reducedNodes[number]
     updatePreview(cm.getValue(), getViewBox())
 }
+function changeShortcut(number){
+    shortcutsNumber[number] = !shortcutsNumber[number]
+    updatePreview(cm.getValue(), getViewBox())
+}
 
 function assignNumeration(node){
     for (let child of node.getChildren()){
@@ -1894,7 +1913,7 @@ class SvgController {
         }
         this.drawUnions(modelTree);
         this.drawJumps(modelTree.getJumps());
-        this.drawShortcuts(modelTree.getShortcuts(),false)
+        this.drawShortcuts(modelTree.getShortcuts())
         if (showReduce) this.drawReducer(modelTree)
         this.drawOrderList.sort((a, b) => (a.getZ() > b.getZ()) ? -1 : 1)
         this.addHeader();
@@ -2100,7 +2119,7 @@ class SvgController {
     drawArrow(arrow) {
         let svg = '';
         svg += '<!-- Arrow -->\n';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + arrow.getVertex1().getX() + ' ' + arrow.getVertex1().getY() + ' L' + arrow.getVertex2().getX() + ' ' + arrow.getVertex2().getY() + '\'  marker-end="url(#triangle)"  />' + '\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + arrow.getVertex1().getX() + ' ' + arrow.getVertex1().getY() + ' L' + arrow.getVertex2().getX() + ' ' + arrow.getVertex2().getY() + '\'    />' + '\n';
         svg += '\t\t<circle opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' cx=\'' + arrow.getVertex2().getX() + '\' cy=\'' + arrow.getVertex2().getY() + '\' r=\'1\' fill=\'' + this.drawSettings.getColor().getArrowColor() + '\' />\n';
         let z = this.calculateAverageZ(arrow.getCoordinates());
         let sn = new SortNode(svg, z);
@@ -2165,17 +2184,17 @@ class SvgController {
         let yorig = line.getVertex1().getY()
         let xdest = line.getVertex2().getX()
         let ydest = line.getVertex2().getY()
-        svg +=  '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\'  d=\'' + 'M' + xorig + '' + yorig + 'C' + xorig + ' ' + xorig + ' ' + ydest + ' ' + xorig + ' ' + xdest + ydest + '\'/>' + '\n';
+        svg +=  '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' fill=\'rgb(255, 255, 255, 0)\' d=\'' + 'M' + xorig + ' ' + yorig + ' C' + xorig + ' ' + xorig + ' ' + ydest + ' ' + xorig + ' ' + xdest + ' ' + ydest + '\'   marker-end="url(#triangle)" />' + '\n';
         let z = this.calculateAverageZ(line.getCoordinates());
         let sn = new SortNode(svg, z);
         this.drawOrderList.push(sn);
     }
 
-    drawShortcuts(shortcuts,curved) {
-        for (let shortcut of shortcuts) {
-            if(!shortcut[0].getReduced() && !shortcut[1].getReduced()){
-            let cube1 = shortcut[0].getLastCube();
-            let cube2 = shortcut[1].getLastCube();
+    drawShortcuts(shortcuts) {
+        for (let i=0; i<shortcuts.length; i++) {
+            if(!shortcuts[i][0].getReduced() && !shortcuts[i][1].getReduced()){
+            let cube1 = shortcuts[i][0].getLastCube();
+            let cube2 = shortcuts[i][1].getLastCube();
             let vertex1 = cube1.getCoordinates()[10];
             let vertex2 = cube1.getCoordinates()[9];
             let vertex3 = cube2.getCoordinates()[9];
@@ -2185,12 +2204,15 @@ class SvgController {
             vertex3.setY(vertex3.getY()+indexShortcuts);
 
             indexShortcuts-=5;
-            if(curved)
+            if(shortcutsNumber[i]){
                 this.drawPath(new Arrow(vertex1, vertex4))
+                //this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
+                //this.drawPointer(new PointerArrow(vertex3,vertex4),"normal") 
+            }
             else{
                 this.drawArrow(new Arrow(vertex1, vertex2));
                 this.drawArrow(new Arrow(vertex2, vertex3));
-                this.drawArrow(new Arrow(vertex4, vertex3));
+                this.drawArrow(new Arrow(vertex3, vertex4));
                 this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
                 this.drawPointer(new PointerArrow(vertex3,vertex4),"normal")        
             }
@@ -2246,7 +2268,7 @@ class SvgController {
         x_min = this.x_min;
         y_max = this.y_max;
         y_min = this.y_min;
-        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\' '+ ZoomOptionstoString(newViewBox)+'>\n'+ ' <defs> <marker id="triangle" viewBox="0 0 5 5" refX="1" refY="5" markerUnits="strokeWidth"markerWidth="10" markerHeight="10"orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs> preserveAspectRatio="xMidYMid meet" ' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-linecap=\'' + round + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
+        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\' '+ ZoomOptionstoString(newViewBox)+'>\n'+ ' <defs> <marker id="triangle" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs> preserveAspectRatio="xMidYMid meet" ' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-linecap=\'' + round + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
     }
     addFooter() {
         this.svgString += '\t </g>\n' + '</svg>';

@@ -1354,12 +1354,15 @@ class Model {
         jump.push(n2);
         this.getModelTree().getJumps().push(jump);
     }
-    addShortcut(n1, n2) {
+    addShortcut(n1, n2, curve) {
         let shortcut = new Array();
         shortcut.push(n1);
         shortcut.push(n2);
+        if (curve=="curve")
+            shortcut.push(true)
         this.getModelTree().getShortcuts().push(shortcut);
     }
+
 }
 
 //SHAPES
@@ -2204,7 +2207,7 @@ class SvgController {
             vertex3.setY(vertex3.getY()+indexShortcuts);
 
             indexShortcuts-=5;
-            if(shortcutsNumber[i]){
+            if(shortcutsNumber[i] || shortcuts[i][2]){
                 this.drawPath(new Arrow(vertex1, vertex4))
                 //this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
                 //this.drawPointer(new PointerArrow(vertex3,vertex4),"normal") 

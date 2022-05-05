@@ -187,13 +187,13 @@ function addOptionsShortcuts(model){
 function createReducers(){
     let svgButtons = ""
     if(totalNodes>1){
-        svgButtons += "<button onclick='setReducers()' style='display: grid;'>SHOW REDUCERS</button>"
+        svgButtons += "<button onclick='setReducers()' id='reduceNodes' style='display: grid;'>SHOW REDUCERS</button>"
     }
     if(showReduce){
         nodesMap.forEach( (_,index) =>{
                 if (index!==1){
                     let number = index - 1
-                    svgButtons += "<button style='display: grid;' onclick='setReducedNode(" + index + ")'>N" + number + "</button></div>"
+                    svgButtons += "<button style='display: grid;' onclick='setReducedNode(" + index + ")' id='reduceNode" + index  + "'>N" + number + "</button></div>"
                 }    
             }
         )      
@@ -2162,13 +2162,21 @@ class SvgController {
         let yorig = pointerArrow.getVertex1().getY()
         let xdest = pointerArrow.getVertex2().getX()
         let ydest = pointerArrow.getVertex2().getY()
+
         size = Math.abs(yorig - ydest) / 6
-        yorig = ydest + size
+        let yorig2;
+        if (ydest<yorig) {
+            yorig = ydest + size
+            yorig2 = ydest + size
+        }else {
+            yorig = ydest - size
+            yorig2 = ydest - size    
+        }
+        
         //Orig is different for inverted and normal
-        let yorig2 = ydest - size
         if (mode =="inverted"){
 
-            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t eeee  <path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
             svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest+5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
         
         }
@@ -2271,7 +2279,7 @@ class SvgController {
         x_min = this.x_min;
         y_max = this.y_max;
         y_min = this.y_min;
-        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\' '+ ZoomOptionstoString(newViewBox)+'>\n'+ ' <defs> <marker id="triangle" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker></defs> preserveAspectRatio="xMidYMid meet" ' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-linecap=\'' + round + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
+        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\' '+ ZoomOptionstoString(newViewBox)+'>\n'+ ' <defs><marker id="triangle" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker><marker id="arrowhead2" viewBox="0 0 60 60" refX="60" refY="30" markerUnits="strokeWidth" markerWidth="16" markerHeight="10" orient="auto"><path d="M 0 0 L 60 30 L 0 60 z" fill="#800000" /> </marker></defs> preserveAspectRatio="xMidYMid meet" ' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-linecap=\'' + round + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
     }
     addFooter() {
         this.svgString += '\t </g>\n' + '</svg>';

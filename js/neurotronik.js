@@ -2165,6 +2165,7 @@ class SvgController {
 
         size = Math.abs(yorig - ydest) / 6
         let yorig2;
+
         if (ydest<yorig) {
             yorig = ydest + size
             yorig2 = ydest + size
@@ -2176,13 +2177,13 @@ class SvgController {
         //Orig is different for inverted and normal
         if (mode =="inverted"){
 
-            svg += '\t\t eeee  <path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
-            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest+5) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-size) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest+size) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
         
         }
         else{
-            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig-5) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
-            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig+5) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig-size) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig+size) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
         }
         let z = this.calculateAverageZ(pointerArrow.getCoordinates());
         let sn = new SortNode(svg, z);

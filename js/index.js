@@ -276,11 +276,7 @@ function loadMovility() {
     document.addEventListener("mousemove", ratonMovidoRotation, false);
 }
 
-/*function hideOptionsBeginning(){
-    setTimeout(function(){
-        hideOptions()
-    },3000)
-}*/
+
 function changeModel(number) {
     switch (number) {
         case 1:

@@ -19,6 +19,16 @@ var ZoomOptions = {
 }
 var newViewBox = {}
 
+let showReduce = false
+let totalNodes = 1;
+var reducedNodes = [] //Stores the nodes reduced
+
+var shortcutsNumber = []
+
+
+let counterNodes = 1; //Allows to give to each node a unique numeration
+let nodesMap = new Map() //Allows to get the nodes in a implementation with the best performance 
+
 function ZoomOptionstoString(lastViewBox){
     if (lastViewBox!==undefined){
     return('viewBox="'+lastViewBox.x + ' '+lastViewBox.y + ' '+ lastViewBox.width + ' '+ lastViewBox.height + '"')
@@ -32,8 +42,12 @@ $(function() {
     cm = CodeMirror.fromTextArea(editor, {
         lineNumbers: true,
         styleActiveLine: true,
-        mode: 'javascript'
-    });
+        mode: 'javascript',
+        closeBrackets: true,
+        gutters: ["error"],
+        lint: true,
+        extraKeys: {"Tab": "autocomplete"}
+    })
     //Load de example number 1
     init(0);
     //Detect a change in the editor
@@ -41,7 +55,6 @@ $(function() {
         updatePreview(cm.getValue(),this.ZoomOptions);
     });
 });
-
 
 
 /*initializes the style  settings for the neural network.
@@ -104,26 +117,34 @@ function initializeDrawSettings() {
     let shift = new Shift(nodesDistance, layersDistance, parentsDistance);
     let font = new Font(fontSize, fontFamily, fontColor);
     let stroke = new Stroke(strokeColor, strokeWidth);
-    let viewBox = new ViewBox(000, 000,-00)
+    let viewBox = new ViewBox(0, 0, 0)
     layerController = new LayerController(new DrawSettings(color, alfa, shift, font, stroke, viewBox, depthtLogs, widthLogs, cubeDimensions, kernelDimensions));
     return settings;
 }
+
+//module.exports = initializeDrawSettings;
 
 /*
 Function that represents the neural network in the preview with the 
 configurable data collected from the menu
 */
 function updatePreview(content,lastViewBox) {
+    nodesMap.clear()
+    counterNodes = 1
+    totalNodes = 1
     this.newViewBox = lastViewBox
     try {
 
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
+            console.log(content)
             eval(code);
-            svgCode = svgController.draw(model.getModelTree());
+            console.log("------------")
+            console.log(model)
+            svgCode = svgController.draw(model.getModelTree(),true);
             $('#svg').html(svgCode);
-                 
+            counterTotalNodes(model.getModelTree())    
         } else {
             $('#svg').html(content);
         }
@@ -133,7 +154,8 @@ function updatePreview(content,lastViewBox) {
         $('#svg').css('font-size', "");
         $('#preview').css('border-right', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(lastViewBox);
-
+        createReducers()
+        addOptionsShortcuts(model.getModelTree())
         document.getElementById("show-error-message").style.display = "none"
        // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
 
@@ -147,6 +169,36 @@ function updatePreview(content,lastViewBox) {
     }
     
     
+}
+
+function addOptionsShortcuts(model){
+    let shorts = model.getShortcuts().length
+    let svgButtons = ''
+    if (shorts!=0){
+        for (i=0; i<shorts; i++){
+            svgButtons += "<button style='display: grid;' onclick='changeShortcut(" + i + ")'>CLICK TO CURVE SHORTCUT -> " + i + "</button></div>"
+            shortcutsNumber.push(false)
+        }    
+        $('#shortcuts').html(svgButtons)
+    }
+}
+
+
+function createReducers(){
+    let svgButtons = ""
+    if(totalNodes>1){
+        svgButtons += "<button onclick='setReducers()' id='reduceNodes' style='display: grid;'>SHOW REDUCERS</button>"
+    }
+    if(showReduce){
+        nodesMap.forEach( (_,index) =>{
+                if (index!==1){
+                    let number = index - 1
+                    svgButtons += "<button style='display: grid;' onclick='setReducedNode(" + index + ")' id='reduceNode" + index  + "'>N" + number + "</button></div>"
+                }    
+            }
+        )      
+    }
+    $('#nodesToBeReduced').html(svgButtons)
 }
 
 function handleErrors(error) {
@@ -368,11 +420,8 @@ var example = {
  */
 function init(number) {
     cm.setValue(example.data[number]);
+    reducedNodes = []
     updatePreview(cm.getValue(),this.zoomCounter);
-}
-function init2(number) {
-    cm2.setValue(example.data[number]);
-    updatePreviewOfSplitted(cm2.getValue(),this.zoomCounter);
 }
 
 /**
@@ -657,7 +706,8 @@ class DrawSettings {
     }
     logWidth(num) {
         if (this.activateWidhtLogs) {
-            return Math.log(num) / Math.log(2);
+            let a = Math.log10(num)*100 +10;
+            return a;
         }
         return num;
     }
@@ -1090,6 +1140,7 @@ function Concatenate(nodes) {
     throw new Error("The Concatenate layer is poorly defined: (Invalid number of arguments.)<p> Example: Concatenate([x1,x2]) with 1 argument.</p>");
 }
 
+
 /*MATRICES*/
 /**
  * Rotation Matrix in axis X
@@ -1275,6 +1326,9 @@ class Model {
         return this.modelTree;
     }
     add$1(x1) {
+        if (x1.getReduced())
+            throw new Error("The root node can't be reduced");
+
         this.modelTree.addRoot(x1);
     }
     add$2(child, parent) {
@@ -1301,12 +1355,15 @@ class Model {
         jump.push(n2);
         this.getModelTree().getJumps().push(jump);
     }
-    addShortcut(n1, n2) {
+    addShortcut(n1, n2, curve) {
         let shortcut = new Array();
         shortcut.push(n1);
         shortcut.push(n2);
+        if (curve=="curve")
+            shortcut.push(true)
         this.getModelTree().getShortcuts().push(shortcut);
     }
+
 }
 
 //SHAPES
@@ -1334,6 +1391,27 @@ class Arrow {
     }
 }
 
+class PointerArrow {
+    constructor(vertex1,vertex2){
+        this.vertex1 = vertex1
+        this.vertex2 = vertex2
+        this.coordinates = new Array();
+        this.coordinates.push(new Coordinate(vertex1.getX(), vertex1.getY(), vertex1.getZ()));
+        this.coordinates.push(new Coordinate(vertex2.getX(), vertex2.getY(), vertex2.getZ()));
+    }
+    getCoordinates() {
+        return this.coordinates;
+    }
+    getVertex1(){
+        return this.vertex1
+    }
+    getVertex2(){
+        return this.vertex2
+    }
+    
+}
+
+
 /*CUBE CLASS*/
 
 /**
@@ -1359,7 +1437,7 @@ class Cube {
         this.isKernel = false;
         this.isInputLayer = false;
         let x_aux = drawSettings.logWidth(this.x);
-        let y_aux = this.y;
+        let y_aux = drawSettings.logWidth(this.y);
         let z_aux = drawSettings.logDepth(this.z);
         this.coordinates = new Array();
         this.coordinates.push(new Coordinate(-(x_aux / 2), -(y_aux / 2), z_aux / 2));
@@ -1431,6 +1509,8 @@ class Pyramid {
     }
 }
 
+
+
 /*NODE CLASS*/
 /**
  * Tree element that contains the set of layers represented as cubic figures
@@ -1442,6 +1522,14 @@ class Node {
         this.parent = new Array();
         this.children = new Array();
         this.actualCube = null;
+        this.reduced = false
+        this.numeration = null;
+    }
+    getReduced(){
+        return this.reduced
+    }
+    setReduced(bool){  
+        this.reduced = bool
     }
     getCubeList() {
         return this.cubeList;
@@ -1454,6 +1542,12 @@ class Node {
     }
     setLastCube(cube) {
         this.lastCube = cube;
+    }
+    setNumeration(number){
+        this.numeration = number
+    }
+    getNumeration(){
+        return this.numeration
     }
     setLast() {
         if (!this.getCubeList().length == 0) {
@@ -1475,6 +1569,10 @@ class Node {
     setActualCube(cube) {
         this.actualCube = cube;
     }
+    reduce(){
+        this.setReduced(true)
+    }
+
     add(input) {
         if (input instanceof InputLayer) {
             for (let cube of this.cubeList) {
@@ -1573,6 +1671,57 @@ function createAuxNode(cube){
     node.setActualCube(node.getLastCube());
     return node;
 }
+function setReducedNode(number){
+    reducedNodes[number] = !reducedNodes[number]
+    updatePreview(cm.getValue(), getViewBox())
+}
+function changeShortcut(number){
+    shortcutsNumber[number] = !shortcutsNumber[number]
+    updatePreview(cm.getValue(), getViewBox())
+}
+
+function assignNumeration(node){
+    for (let child of node.getChildren()){
+        if (child.getNumeration() == null){
+            counterNodes++
+            child.setNumeration(counterNodes)
+            nodesMap.set(counterNodes,child)
+        }
+        assignNumeration(child)
+    }
+
+}
+
+function counterTotalNodes(modelTree){
+    for (let nodeList of modelTree.getNodes()) 
+        for (let parent of nodeList) 
+            for (let child of parent.getChildren()){
+                totalNodes++;
+            }
+}
+
+
+function setNodesReducedOnTree(modelTree){
+    let node = modelTree.getRoot()
+    nodesMap.set(counterNodes,node)
+    assignNumeration(node)   
+    for (let i=1; i<reducedNodes.length; i++){
+        if (reducedNodes[i]){
+            
+            nodesMap.get(i).setReduced(true)
+        }
+    }
+}
+
+function setReducers(){
+    showReduce = !showReduce
+    updatePreview(cm.getValue(),getViewBox())
+}
+
+function getViewBox(){
+    return svg.getViewBox()
+}
+
 
 function createAuxNodeList(cubes){
     let node = new Node();
@@ -1596,6 +1745,9 @@ class NeuralNetworkTree {
     }
     isEmpty() {
         return (this.root == null);
+    }
+    getRoot(){
+        return this.root
     }
     isLeaf(node) {
         return (node.getChildren() === null) || (node.getChildren().length == 0);
@@ -1752,21 +1904,27 @@ class SvgController {
         this.matrixController = new MatrixController(this.drawSettings.getAlfa().getAlfaX(), this.drawSettings.getAlfa().getAlfaY(), this.drawSettings.getAlfa().getAlfaZ());
     }
     draw(modelTree) {
+        setNodesReducedOnTree(modelTree)
         this.shiftTree(modelTree);
-        this.calculateImageCenter();
+        this.calculateImageCenter();     
         for (let nodes of modelTree.getNodes()) {
-            for (let node of nodes) {
-                this.drawNode(node);
+                for (let node of nodes){
+                    if (node.getReduced()) {
+                        this.drawNode(node,true)
+                    }
+                    else this.drawNode(node,false);
             }
         }
         this.drawUnions(modelTree);
         this.drawJumps(modelTree.getJumps());
-        this.drawShortcuts(modelTree.getShortcuts());
+        this.drawShortcuts(modelTree.getShortcuts())
+        if (showReduce) this.drawReducer(modelTree)
         this.drawOrderList.sort((a, b) => (a.getZ() > b.getZ()) ? -1 : 1)
         this.addHeader();
         for (let n of this.drawOrderList) {
             this.svgString += n.getSvgString();
         }
+       // this.svgString += this.aux
         this.addFooter();
         return this.svgString;
     }
@@ -1809,48 +1967,57 @@ class SvgController {
             this.length = 0;
         }
     }
-    drawNode(node) {
-        let modelQueue = node.getCubeList();
-        for (let i = 0; i < modelQueue.length; i++) {
-            let cube = modelQueue[i];
-            this.doTransformations(cube.getCoordinates());
-            if (this.activate) {
-                let kernelCube = modelQueue[i - 1];
-                let vertex = cube.getCoordinates()[8];
-                let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
-                this.drawPyramid(pyramid, kernelCube);
-                this.activate = false;
-            }
-            if (i !== modelQueue.length - 1) {
-                if (modelQueue[i + 1].isDenseLayer) {
-                    this.drawSingleCube(cube);
+    drawNode(node,reduced) {
+        if(!reduced){
+            let modelQueue = node.getCubeList();
+            for (let i = 0; i < modelQueue.length; i++) {
+                let cube = modelQueue[i];
+                this.doTransformations(cube.getCoordinates());
+                if (this.activate) {
+                    let kernelCube = modelQueue[i - 1];
+                    let vertex = cube.getCoordinates()[8];
+                    let pyramid = new Pyramid(kernelCube.getCoordinates().slice(0, 4), new Coordinate(vertex.getX(), vertex.getY(), vertex.getZ()));
+                    this.drawPyramid(pyramid, kernelCube);
+                    this.activate = false;
                 }
+                if (i !== modelQueue.length - 1) {
+                    if (modelQueue[i + 1].isDenseLayer) {
+                        this.drawSingleCube(cube);
+                    }
+                }
+                if (i === modelQueue.length - 1 || cube.isDenseLayer) {
+                    this.drawSingleCube(cube);
+                } else {
+                    this.drawCube(cube);
+                }
+                if (cube.isDenseLayer && i != 0) {
+                    let lastCube = modelQueue[i - 1];
+                    this.lineTo(lastCube, cube);
+                }
+                if (cube.isKernel) {
+                    this.activate = true;
+                }
+                this.updateMaxMin(cube.getCoordinates());
             }
-            if (i === modelQueue.length - 1 || cube.isDenseLayer) {
-                this.drawSingleCube(cube);
-            } else {
-                this.drawCube(cube);
-            }
-            if (cube.isDenseLayer && i != 0) {
-                let lastCube = modelQueue[i - 1];
-                this.lineTo(lastCube, cube);
-            }
-            if (cube.isKernel) {
-                this.activate = true;
-            }
-            this.updateMaxMin(cube.getCoordinates());
+        }else{
+            let cube = node.getCubeList()
+            let actualcube = cube[2]
+            this.doTransformations(actualcube.getCoordinates())
+            this.drawCube(actualcube,reduced)
+            return actualcube
         }
     }
     drawSingleCube(cube) {
+        let round = "round"
         let color = this.selectColor(cube);
         let opacity = this.selectOpacity(cube);
         let svg = '';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + '\'/>' + '\n';
         if (this.drawSettings.isActivateLayerDimensions()) {
             svg += this.drawText(cube);
         }
@@ -1863,33 +2030,53 @@ class SvgController {
             for (let parent of nodeList) {
                 for (let child of parent.getChildren()) {
                     let lastCube = child.getLastCube();
-                    this.lineTo(lastCube, parent.getCubeList()[0]);
+                    if (child.getReduced() && parent.getReduced()) 
+                        this.lineTo(child.getCubeList()[2], parent.getCubeList()[2])
+                    else if(child.getReduced())
+                            this.lineTo(child.getCubeList()[2], parent.getCubeList()[0])
+                    else if (parent.getReduced())
+                            this.lineTo(lastCube, parent.getCubeList()[2]);                                    
+                    else    
+                            this.lineTo(lastCube, parent.getCubeList()[0]);
+                    
                 }
             }
         }
     }
-    drawCube(cube) {
+
+    drawCube(cube,reduced) {
+        let round= "round"
         let color = this.selectColor(cube);
         let opacity = this.selectOpacity(cube);
         let svg = '';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' d=\'' + 'M' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + '\'/>' + '\n';
-        if (cube.isKernel) {
-            this.aux = svg + this.aux;
-            let sn = new SortNode(this.aux, this.z);
-            this.drawOrderList.push(sn);
-        } else {
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + ' L' + cube.getCoordinates()[1].getX() + ' ' + cube.getCoordinates()[1].getY() + ' L' + cube.getCoordinates()[5].getX() + ' ' + cube.getCoordinates()[5].getY() + ' L' + cube.getCoordinates()[4].getX() + ' ' + cube.getCoordinates()[4].getY() + ' L' + cube.getCoordinates()[0].getX() + ' ' + cube.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + opacity + '\' fill=\'' + color + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + ' L' + cube.getCoordinates()[3].getX() + ' ' + cube.getCoordinates()[3].getY() + ' L' + cube.getCoordinates()[7].getX() + ' ' + cube.getCoordinates()[7].getY() + ' L' + cube.getCoordinates()[6].getX() + ' ' + cube.getCoordinates()[6].getY() + ' L' + cube.getCoordinates()[2].getX() + ' ' + cube.getCoordinates()[2].getY() + '\'/>' + '\n';
+        if(reduced){
             if (this.drawSettings.isActivateLayerDimensions()) {
                 svg += this.drawText(cube);
             }
-            this.aux = svg;
-            this.z = this.calculateAverageZ(cube.getCoordinates());
+            this.aux = svg + this.aux;
+            let sn = new SortNode(this.aux, this.calculateAverageZ(cube.getCoordinates()));
+            this.drawOrderList.push(sn);
+        }else{
+            if (cube.isKernel) {
+                this.aux = svg + this.aux;
+                let sn = new SortNode(this.aux, this.z);
+                this.drawOrderList.push(sn);
+            } else {
+                if (this.drawSettings.isActivateLayerDimensions()) {
+                    svg += this.drawText(cube);
+                }
+                this.aux = svg;
+                this.z = this.calculateAverageZ(cube.getCoordinates());
+            }
         }
     }
+
     drawText(cube) {
         let svg = '';
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"  x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[6].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[4].getY() + cube.getCoordinates()[6].getY()) / 2 + '\'>' + (cube.getY()) + '</text>\n';
@@ -1898,15 +2085,34 @@ class SvgController {
         return svg;
 
     }
+
+    drawNodeReducersText(arr,vertex1,vertex2,node){
+
+        let x = (vertex1.getX() + vertex2.getX()) 
+        if ((vertex1.getX()>0 && vertex2.getX()>0) || (vertex1.getX()<0 && vertex2.getX()<0) ) 
+            x = x/2
+        let y = (vertex1.getY() + vertex2.getY()) - 8
+        if ((vertex1.getY()>0 && vertex2.getY()>0) || (vertex1.getY()<0 && vertex2.getY()<0)) 
+            y = y/2
+        let svg = '';
+        svg += 'buscame'
+        let showedNumber = node.getNumeration()-1 
+        svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"  x=\'' + x + '\' y=\'' + y + '\'> Node ' + showedNumber+ '</text>\n';
+        let z = this.calculateAverageZ(arr.getCoordinates());
+        let sn = new SortNode(svg, z);
+        this.drawOrderList.push(sn);
+    }
+
     drawTextPyramid(pyramid, kernel) {
         return '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"' + " x=\"" + ((pyramid.getCoordinates()[0].getX() + pyramid.getCoordinates()[1].getX() + pyramid.getVertex().getX()) / 3) + "\" y=\"" + (pyramid.getCoordinates()[0].getY() + (pyramid.getVertex().getY() - 7)) / 2 + "\" " + ">" + "[" + (kernel.getX()) + "," + (kernel.getY()) + "]" + "</text>\n";
     }
     drawPyramid(pyramid, kernel) {
+        let round = "round"
         let svg = '';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' d=\'' + 'M' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + ' L' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' d=\'' + 'M' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + ' L' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' d=\'' + 'M' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + ' L' + pyramid.getCoordinates()[3].getX() + ' ' + pyramid.getCoordinates()[3].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + '\'/>' + '\n';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' d=\'' + 'M' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + ' L' + pyramid.getCoordinates()[3].getX() + ' ' + pyramid.getCoordinates()[3].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + '\'/>' + '\n\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + ' L' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + ' L' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[0].getX() + ' ' + pyramid.getCoordinates()[0].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + ' L' + pyramid.getCoordinates()[3].getX() + ' ' + pyramid.getCoordinates()[3].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[1].getX() + ' ' + pyramid.getCoordinates()[1].getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getConvOpacity() + '\' fill=\'' + this.drawSettings.getColor().getPyramidColor() + '\' stroke-linecap=\'' + round + '\' stroke-linejoin=\'' + round + '\' d=\'' + 'M' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + ' L' + pyramid.getCoordinates()[3].getX() + ' ' + pyramid.getCoordinates()[3].getY() + ' L' + pyramid.getVertex().getX() + ' ' + pyramid.getVertex().getY() + ' L' + pyramid.getCoordinates()[2].getX() + ' ' + pyramid.getCoordinates()[2].getY() + '\'/>' + '\n\n';
         if (this.drawSettings.isActivateKernelDimensions()) {
             svg += this.drawTextPyramid(pyramid, kernel);
         }
@@ -1917,7 +2123,7 @@ class SvgController {
     drawArrow(arrow) {
         let svg = '';
         svg += '<!-- Arrow -->\n';
-        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + arrow.getVertex1().getX() + ' ' + arrow.getVertex1().getY() + ' L' + arrow.getVertex2().getX() + ' ' + arrow.getVertex2().getY() + '\'/>' + '\n';
+        svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + arrow.getVertex1().getX() + ' ' + arrow.getVertex1().getY() + ' L' + arrow.getVertex2().getX() + ' ' + arrow.getVertex2().getY() + '\'    />' + '\n';
         svg += '\t\t<circle opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' cx=\'' + arrow.getVertex2().getX() + '\' cy=\'' + arrow.getVertex2().getY() + '\' r=\'1\' fill=\'' + this.drawSettings.getColor().getArrowColor() + '\' />\n';
         let z = this.calculateAverageZ(arrow.getCoordinates());
         let sn = new SortNode(svg, z);
@@ -1930,11 +2136,78 @@ class SvgController {
             this.lineTo(lastCube, firstCube);
         }
     }
-    drawShortcuts(shortcuts) {
-        for (let shortcut of shortcuts) {
-            let cube1 = shortcut[0].getLastCube();
-            let cube2 = shortcut[1].getLastCube();
+    drawReducer(){
+        nodesMap.forEach( (node, key)  => {
+            if(key!==1){
+                let cube1 = node.getCubeList()[0]
+                let cube2 = node.getLastCube()
+                let vertex1 = cube1.getCoordinates()[10];
+                let vertex2 = cube1.getCoordinates()[9];
+                let vertex3 = cube2.getCoordinates()[9];
+                let vertex4 = cube2.getCoordinates()[10];
+                if (!node.getReduced()){
+                    this.drawArrow(new Arrow(vertex1, vertex2));
+                    this.drawArrow(new Arrow(vertex2, vertex3));
+                    this.drawArrow(new Arrow(vertex4, vertex3));
+                    this.drawNodeReducersText(new Arrow(vertex2,vertex3),vertex2,vertex3,node);
+                }
+                }
+            }
+        )
+    }
 
+    drawPointer(pointerArrow,mode) {
+        let svg = '';
+        let size;
+        let xorig = pointerArrow.getVertex1().getX()
+        let yorig = pointerArrow.getVertex1().getY()
+        let xdest = pointerArrow.getVertex2().getX()
+        let ydest = pointerArrow.getVertex2().getY()
+
+        size = Math.abs(yorig - ydest) / 6
+        let yorig2;
+
+        if (ydest<yorig) {
+            yorig = ydest + size
+            yorig2 = ydest + size
+        }else {
+            yorig = ydest - size
+            yorig2 = ydest - size    
+        }
+        
+        //Orig is different for inverted and normal
+        if (mode =="inverted"){
+
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest-size) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xdest+size) + ' ' + (yorig) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+        
+        }
+        else{
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig-size) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+            svg += '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' d=\'' + 'M' + (xorig+size) + ' ' + (yorig2) + ' L' + xdest + ' ' + ydest + '\'/>' + '\n';
+        }
+        let z = this.calculateAverageZ(pointerArrow.getCoordinates());
+        let sn = new SortNode(svg, z);
+        this.drawOrderList.push(sn);
+    }
+    
+    drawPath(line){
+        let svg = 'aqui'
+        let xorig = line.getVertex1().getX()
+        let yorig = line.getVertex1().getY()
+        let xdest = line.getVertex2().getX()
+        let ydest = line.getVertex2().getY()
+        svg +=  '\t\t<path opacity=\'' + this.drawSettings.getColor().getArrowOpacity() + '\' stroke=\'' + this.drawSettings.getColor().getArrowColor() + '\' fill=\'rgb(255, 255, 255, 0)\' d=\'' + 'M' + xorig + ' ' + yorig + ' C' + xorig + ' ' + xorig + ' ' + ydest + ' ' + xorig + ' ' + xdest + ' ' + ydest + '\'   marker-end="url(#triangle)" />' + '\n';
+        let z = this.calculateAverageZ(line.getCoordinates());
+        let sn = new SortNode(svg, z);
+        this.drawOrderList.push(sn);
+    }
+
+    drawShortcuts(shortcuts) {
+        for (let i=0; i<shortcuts.length; i++) {
+            if(!shortcuts[i][0].getReduced() && !shortcuts[i][1].getReduced()){
+            let cube1 = shortcuts[i][0].getLastCube();
+            let cube2 = shortcuts[i][1].getLastCube();
             let vertex1 = cube1.getCoordinates()[10];
             let vertex2 = cube1.getCoordinates()[9];
             let vertex3 = cube2.getCoordinates()[9];
@@ -1944,12 +2217,22 @@ class SvgController {
             vertex3.setY(vertex3.getY()+indexShortcuts);
 
             indexShortcuts-=5;
-
-            this.drawArrow(new Arrow(vertex1, vertex2));
-            this.drawArrow(new Arrow(vertex2, vertex3));
-            this.drawArrow(new Arrow(vertex4, vertex3));
+            if(shortcutsNumber[i] || shortcuts[i][2]){
+                this.drawPath(new Arrow(vertex1, vertex4))
+                //this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
+                //this.drawPointer(new PointerArrow(vertex3,vertex4),"normal") 
+            }
+            else{
+                this.drawArrow(new Arrow(vertex1, vertex2));
+                this.drawArrow(new Arrow(vertex2, vertex3));
+                this.drawArrow(new Arrow(vertex3, vertex4));
+                this.drawPointer(new PointerArrow(vertex1,vertex2),"inverted")
+                this.drawPointer(new PointerArrow(vertex3,vertex4),"normal")        
+            }
         }
+            
         indexShortcuts=0;
+            }
     }
     selectColor(cube) {
         if (cube.isKernel) {
@@ -1993,11 +2276,12 @@ class SvgController {
         return new Coordinate(x, y, z);
     }
     addHeader() {
+        let round= "round"
         x_max = this.x_max;
         x_min = this.x_min;
         y_max = this.y_max;
         y_min = this.y_min;
-        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\'preserveAspectRatio="xMidYMid meet" '+ ZoomOptionstoString(newViewBox)+'>\n' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
+        this.svgString = '<svg id="svgImage" xmlns=\'http://www.w3.org/2000/svg\' '+ ZoomOptionstoString(newViewBox)+'>\n'+ ' <defs><marker id="triangle" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/></marker><marker id="arrowhead2" viewBox="0 0 60 60" refX="60" refY="30" markerUnits="strokeWidth" markerWidth="16" markerHeight="10" orient="auto"><path d="M 0 0 L 60 30 L 0 60 z" fill="#800000" /> </marker></defs> preserveAspectRatio="xMidYMid meet" ' + '\t<g stroke=\'' + this.drawSettings.getStroke().getStroke_color() + '\' stroke-linecap=\'' + round + '\' stroke-width=\'' + this.drawSettings.getStroke().getStroke_width() + '\'>\n';
     }
     addFooter() {
         this.svgString += '\t </g>\n' + '</svg>';

@@ -11,13 +11,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/00-codemirror.css">
+    <link rel="stylesheet" href="css/show-hint.css">
     <script src="js/codemirror.js"></script>
     <script src="js/active-line.js"></script>
+    <script src="js/lint/lint.js"></script>
+    <script src="js/lint/javascript-lint.js"></script>
+    <script src="js/lint/jshint.js"></script>
     <script src="js/jquery-3.5.1.min.js"></script>
     <script src="js/index.js"></script>
     <script src="js/neurotronik.js"></script>
     <script src="js/jquery.svg.pan.zoom.js"></script>
     <script src="js/javascript.js"></script>
+    <script src="js/edit/close-brackets.js"></script>
+    <script src="js/hint/show-hint.js"></script>
+    <script src="js/hint/javascript-hint.js"></script>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" type="image/png" href="images/favicon.PNG" />
@@ -27,6 +34,10 @@
 
 <body oncontextmenu="return false;">
     <div class="rotation" id="rotation"></div>
+    <div class="nodesReduced" id="nodesReduced">
+        <div id="nodesToBeReduced">
+        </div>
+    </div>
     <div id="preview">
         <div id="svg"></div>
     
@@ -242,9 +253,9 @@
                             </div>
                         </li>
                     </ul>
-                    <li class="toggle accordion-toggle">
+                    <li class="toggle accordion-toggle" >
                         <span class="icon-plus"></span>
-                        <a class="menu-link">Rotations Settings</a>
+                        <a class="menu-link" id="rotation__Settings">Rotations Settings</a>
                     </li>
                     <ul class="menu-submenu accordion-content">
                         <li>
@@ -418,6 +429,14 @@
                     </ul>
                     <li class="toggle accordion-toggle">
                         <span class="icon-plus"></span>
+                        <a class="menu-link">SHORTCUTS</a>
+                    </li>
+                    <ul class="menu-submenu accordion-content">
+                            <div id="shortcuts">
+                            </div>
+                    </ul>
+                    <li class="toggle accordion-toggle">
+                        <span class="icon-plus"></span>
                         <a class="menu-link">About</a>
                     </li>
                     <ul class="menu-submenu accordion-content">
@@ -487,13 +506,13 @@
     
         <div class="menu-examples" id="menu-examples">
             <div class="label">EXAMPLES</div>
-            <a class="item" onclick="changeModel(1)"><span>Basic CNN</span></a>
-            <a class="item" onclick="changeModel(2)"><span>Basic Siamese</span></a>
-            <a class="item" onclick="changeModel(3)"><span>Complex Siamese</span></a>
-            <a class="item" onclick="changeModel(4)"><span>Encoder-Decoder</span></a>
-            <a class="item" onclick="changeModel(5)"><span>ResNet</span></a>
-            <a class="item" onclick="changeModel(6)"><span>Recurrent NN</span></a>
-            <a class="item" onclick="changeModel(7)"><span>Siamese with shortcuts</span></a>
+            <a class="item" id="opt1" onclick="changeModel(1)"><span>Basic CNN</span></a>
+            <a class="item" id="opt2" onclick="changeModel(2)"><span>Basic Siamese</span></a>
+            <a class="item" id="opt3" onclick="changeModel(3)"><span>Complex Siamese</span></a>
+            <a class="item" id="opt4" onclick="changeModel(4)"><span>Encoder-Decoder</span></a>
+            <a class="item" id="opt5" onclick="changeModel(5)"><span>ResNet</span></a>
+            <a class="item" id="opt6" onclick="changeModel(6)"><span>Recurrent NN</span></a>
+            <a class="item" id="opt7" onclick="changeModel(7)"><span>Siamese with shortcuts</span></a>
         </div>
     
         <div class="dark-theme">

@@ -13,7 +13,8 @@
     ANN Drawer is a new and improved version of the application <a href="https://neuropaint.github.io/">Neuropaint</a> created by Marcos Ruiz Muñoz. Test this new version with a new interface, prove the new features and enjoy with all the possibilities that are in the app! 
 </p>
 
-Here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a> 
+This version has been updated with two different vesrions. To get the version 2.0 use the command line with the project opened and type "git checkout eb03ce7647a2d5567dfbbccabab0029c71aac06f". 
+However, if you want to get the last updated version here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a> 
 
 <a name="ui"></a>
 # User Interface

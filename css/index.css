@@ -1027,7 +1027,12 @@ a.button {
     width: 3.6rem;
 }
 
-
+.nodesReduced {
+    top: 40%;
+    display: grid;
+    position: absolute;
+    z-index: 1000000;
+}
 
 
 
@@ -1616,9 +1621,6 @@ a.button {
     background: rgb(99, 181, 228);
 }
 
-path {
-    stroke-linecap: square;
-}
 
 
 .cuadro {
@@ -2023,6 +2025,10 @@ display:block;
       z-index: 100000000;
       position: absolute;
 
+  }
+
+  .path {
+      stroke-linecap: round;
   }
 
   .dock__buttons {   

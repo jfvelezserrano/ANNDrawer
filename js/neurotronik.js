@@ -706,7 +706,8 @@ class DrawSettings {
     }
     logWidth(num) {
         if (this.activateWidhtLogs) {
-            return Math.log(num) / Math.log(2);
+            let a = Math.log10(num)*100 +10;
+            return a;
         }
         return num;
     }
@@ -1436,7 +1437,7 @@ class Cube {
         this.isKernel = false;
         this.isInputLayer = false;
         let x_aux = drawSettings.logWidth(this.x);
-        let y_aux = this.y;
+        let y_aux = drawSettings.logWidth(this.y);
         let z_aux = drawSettings.logDepth(this.z);
         this.coordinates = new Array();
         this.coordinates.push(new Coordinate(-(x_aux / 2), -(y_aux / 2), z_aux / 2));
@@ -1923,7 +1924,7 @@ class SvgController {
         for (let n of this.drawOrderList) {
             this.svgString += n.getSvgString();
         }
-        this.svgString += this.aux
+       // this.svgString += this.aux
         this.addFooter();
         return this.svgString;
     }

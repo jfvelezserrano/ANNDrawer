@@ -54,6 +54,8 @@ $(function() {
     cm.on('change', function() {
         updatePreview(cm.getValue(),this.ZoomOptions);
     });
+    resizeRight()
+
 });
 
 
@@ -138,10 +140,7 @@ function updatePreview(content,lastViewBox) {
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
-            console.log(content)
             eval(code);
-            console.log("------------")
-            console.log(model)
             svgCode = svgController.draw(model.getModelTree(),true);
             $('#svg').html(svgCode);
             counterTotalNodes(model.getModelTree())    
@@ -1907,6 +1906,7 @@ class SvgController {
         this.drawJumps(modelTree.getJumps());
         this.drawShortcuts(modelTree.getShortcuts())
         if (showReduce) this.drawReducer(modelTree)
+        console.log(this.drawOrderList)
         this.drawOrderList.sort((a, b) => (a.getZ() > b.getZ()) ? -1 : 1)
         this.addHeader();
         for (let n of this.drawOrderList) {

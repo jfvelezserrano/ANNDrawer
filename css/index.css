@@ -164,7 +164,7 @@ a.button {
     display: inline-block;
     cursor: pointer;
     top: 0px;
-    left: 30%;
+    left: 60%;
     resize: both;
     padding: 3px;
     height: 90px;
@@ -550,7 +550,7 @@ a.button {
 
 .sidebar-wrapper .sidebar-menu .sidebar-dropdown.active>a:after {
     transform: rotate(90deg);
-    right: 17px;
+    left: 17px;
 }
 
 /*--------------------------side-footer------------------------------*/
@@ -1040,11 +1040,12 @@ a.button {
 
 .viewbuttons {
     left: 10%;
-    top: 97%;
+    top: 19.5PX;
     position: absolute;
     display: flex;
     z-index: 1000;
     margin-left: 8px; 
+    font-size: 12px;
 }
 
 .viewbuttons2 {
@@ -1717,8 +1718,8 @@ display:block;
     cursor: pointer;
     pointer-events: none;
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 18px;
+    left: 639px;
     z-index: 1000;
   }
   .menu-examples-dark-mode{
@@ -1744,6 +1745,7 @@ display:block;
     cursor: pointer;
     pointer-events: all;
     transition: font-size 0.25s ease;
+    font-size: 13px;
 
     
   }
@@ -1751,7 +1753,7 @@ display:block;
     display: inline-block;
     cursor: pointer;
     pointer-events: all;
-    font-size: larger;
+    font-size: 14px;
     transition: font-size 0.25s ease;
   }
   .spacer {
@@ -1778,6 +1780,7 @@ display:block;
     margin-top: 10px;
     top: 10px;
     opacity: 0;
+    font-size: 13px;
     transition: opacity 0.5s ease, top 0.5s ease;
     transition-delay: 0;
   }
@@ -1868,8 +1871,8 @@ display:block;
       position: absolute;
       width: 5px;
       height: 5px;
-      right: 1%;
-      top: 1%;      
+      left: 1%;
+      top: 21px;      
       z-index: 1000;
   }  
 

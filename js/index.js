@@ -40,10 +40,12 @@ $(function () {
     loadDarkTheme();
     getBrowser()
     loadMovility()
+    
     //hideOptionsBeginning()
     $("html,body").animate({ scrollTop: 0 }, "slow");
     $("#big-menu-button").click()
     $("#big-menu-button").click()
+
 
 
 });
@@ -227,7 +229,7 @@ function loadMenu() {
 
     function slideMenu() {
         var activeState = $("#menu-container .menu-list").hasClass("active");
-        $("#menu-container .menu-list").animate({ left: activeState ? "-1%" : "-105%" }, 400);
+        $("#menu-container .menu-list").animate({ left: activeState ? "-75%" : "-105%" }, 400);
     }
 
     $("#big-menu-button").click(function (event) {

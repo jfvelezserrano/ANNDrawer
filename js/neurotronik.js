@@ -54,6 +54,8 @@ $(function() {
     cm.on('change', function() {
         updatePreview(cm.getValue(),this.ZoomOptions);
     });
+    resizeRight()
+
 });
 
 
@@ -138,10 +140,7 @@ function updatePreview(content,lastViewBox) {
         let settings = initializeDrawSettings();
         if (content.includes('model')) {
             let code = settings + content;
-            console.log(content)
             eval(code);
-            console.log("------------")
-            console.log(model)
             svgCode = svgController.draw(model.getModelTree(),true);
             $('#svg').html(svgCode);
             counterTotalNodes(model.getModelTree())    
@@ -155,7 +154,6 @@ function updatePreview(content,lastViewBox) {
         $('#preview').css('border-right', '2px solid #1b6181');
         svg = $("svg").svgPanZoom(lastViewBox);
         createReducers()
-        addOptionsShortcuts(model.getModelTree())
         document.getElementById("show-error-message").style.display = "none"
        // document.getElementById('editor').style.backgroundColor = "rgb(0, 0, 0)"
 
@@ -171,17 +169,6 @@ function updatePreview(content,lastViewBox) {
     
 }
 
-function addOptionsShortcuts(model){
-    let shorts = model.getShortcuts().length
-    let svgButtons = ''
-    if (shorts!=0){
-        for (i=0; i<shorts; i++){
-            svgButtons += "<button style='display: grid;' onclick='changeShortcut(" + i + ")'>CLICK TO CURVE SHORTCUT -> " + i + "</button></div>"
-            shortcutsNumber.push(false)
-        }    
-        $('#shortcuts').html(svgButtons)
-    }
-}
 
 
 function createReducers(){
@@ -1682,7 +1669,7 @@ function changeShortcut(number){
 
 function assignNumeration(node){
     for (let child of node.getChildren()){
-        if (child.getNumeration() == null){
+        if (child.getNumeration() == null){ //Necesario asegurarse de que el nodo no ha sido marcado por un camino recurrente
             counterNodes++
             child.setNumeration(counterNodes)
             nodesMap.set(counterNodes,child)
@@ -1919,6 +1906,7 @@ class SvgController {
         this.drawJumps(modelTree.getJumps());
         this.drawShortcuts(modelTree.getShortcuts())
         if (showReduce) this.drawReducer(modelTree)
+        console.log(this.drawOrderList)
         this.drawOrderList.sort((a, b) => (a.getZ() > b.getZ()) ? -1 : 1)
         this.addHeader();
         for (let n of this.drawOrderList) {

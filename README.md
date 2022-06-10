@@ -6,6 +6,7 @@
 1. [Description 🚀](#description)
 2. [User Interface 🎨](#ui)
 3. [Keyboard shortcuts ⌨️](#shortcuts)
+4. [Tests 💻](#tests)
 
 <a name="description"></a>
  # Description
@@ -66,3 +67,16 @@ However, if you want to get the last updated version here is the new link <a hre
 | Open menu |  CTRL+SHIFT+Q |
 | Terminal to the Right |  CTRL+SHIFT+ Arrow Right |
 | Terminal to the Bottom |  CTRL+SHIFT+ Arrow Down |
+
+
+<a name="Tests"></a>
+# Tests
+<p>
+    As a new feature now you can test some of the functionality with the tool Selenium. To run the tests, install Node.js on your machine, clone the repository and execute on the terminal:
+ ```npm init
+ npm install selenium-webdriver -y
+```
+The tests are executed with the Google Driver, so go to this <a href="https://chromedriver.chromium.org/home">link</a>, and download the correct version for your machine. 
+ Now, you can run each test with the command node + the test you want to run. Be free to create new tests and prove your own implementations!!
+ 
+</p>

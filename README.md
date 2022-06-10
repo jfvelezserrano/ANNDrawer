@@ -73,10 +73,12 @@ However, if you want to get the last updated version here is the new link <a hre
 # Tests
 <p>
     As a new feature now you can test some of the functionality with the tool Selenium. To run the tests, install Node.js on your machine, clone the repository and execute on the terminal:
+ 
  ```
  npm init
  npm install selenium-webdriver -y
-```
+ ```
+ 
 The tests are executed with the Google Driver, so go to this <a href="https://chromedriver.chromium.org/home">link</a>, and download the correct version for your machine. 
  Now, you can run each test with the command node + the test you want to run. Be free to create new tests and prove your own implementations!!
  

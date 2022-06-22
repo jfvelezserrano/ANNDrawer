@@ -21,10 +21,9 @@ To get the version 2.0 type on your terminal:
 git clone https://github.com/jfvelezserrano/ANNDrawer.git
 cd ANNDrawer
 git checkout eb03ce7647a2d5567dfbbccabab0029c71aac06f
-
  ```
  
-However, if you want to get the last updated version here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a> 
+However, if you want to get the last updated version here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a>!!
 
 <a name="ui"></a>
 # User Interface

@@ -873,7 +873,6 @@ function reallocateViewButtons() {
 function changeTheme() {
 
     document.body.classList.toggle('dark-mode');
-    document.getElementById('velocity__rotation').classList.toggle('darkMode')
     document.getElementById('dock2').classList.toggle('darkMode')
     document.getElementById('dock').classList.toggle('darkMode')
     document.getElementById('hide2').classList.toggle('darkMode')

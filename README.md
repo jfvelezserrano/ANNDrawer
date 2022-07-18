@@ -6,6 +6,7 @@
 1. [Description 🚀](#description)
 2. [User Interface 🎨](#ui)
 3. [Keyboard shortcuts ⌨️](#shortcuts)
+4. [Tests 💻](#tests)
 
 <a name="description"></a>
  # Description
@@ -13,7 +14,16 @@
     ANN Drawer is a new and improved version of the application <a href="https://neuropaint.github.io/">Neuropaint</a> created by Marcos Ruiz Muñoz. Test this new version with a new interface, prove the new features and enjoy with all the possibilities that are in the app! 
 </p>
 
-Here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a> 
+This new app has been updated with two different versions. 
+To get the version 2.0 type on your terminal: 
+
+ ```
+git clone https://github.com/jfvelezserrano/ANNDrawer.git
+cd ANNDrawer
+git checkout eb03ce7647a2d5567dfbbccabab0029c71aac06f
+ ```
+ 
+However, if you want to get the last updated version here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Drawer</a>!!
 
 <a name="ui"></a>
 # User Interface
@@ -65,3 +75,19 @@ Here is the new link <a href="https://jfvelezserrano.github.io/ANNDrawer">ANN Dr
 | Open menu |  CTRL+SHIFT+Q |
 | Terminal to the Right |  CTRL+SHIFT+ Arrow Right |
 | Terminal to the Bottom |  CTRL+SHIFT+ Arrow Down |
+
+
+<a name="Tests"></a>
+# Tests
+<p>
+    As a new feature now you can test some of the functionality with the tool Selenium. To run the tests, install Node.js on your machine, clone the repository and execute on the terminal:
+ 
+ ```
+ npm init
+ npm install selenium-webdriver -y
+ ```
+ 
+The tests are executed with the Google Driver, so go to this <a href="https://chromedriver.chromium.org/home">link</a>, and download the correct version for your machine. 
+ Now, you can run each test with the command node + the test you want to run. Be free to create new tests and prove your own implementations!!
+ 
+</p>

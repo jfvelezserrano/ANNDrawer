@@ -695,12 +695,16 @@ class DrawSettings {
         if (this.activateWidhtLogs) {
             let a = Math.log10(num)*100 +10;
             return a;
+        } else if (num < 10) {
+            return 10;
         }
         return num;
     }
     logDepth(num) {
         if (this.activateDepthLogs) {
             return Math.log(num) / Math.log(2);
+        } else if (num < 10) {
+            return 10;
         }
         return num;
     }
@@ -783,7 +787,7 @@ class LayerController {
         return this.setPooling(tuple, actualCube);
     }
     Dense(vector) {
-        let cube = new Cube(new Coordinate(10, vector, 10), this.drawSettings);
+        let cube = new Cube(new Coordinate(1, vector, 1), this.drawSettings);
         cube.setDenseLayer(true);
         return cube;
     }

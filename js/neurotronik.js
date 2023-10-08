@@ -786,8 +786,8 @@ class LayerController {
     MaxPooling2D(tuple, actualCube) {
         return this.setPooling(tuple, actualCube);
     }
-    Dense(vector) {
-        let cube = new Cube(new Coordinate(1, vector, 1), this.drawSettings);
+    Dense(vector, label) {
+        let cube = new Cube(new Coordinate(1, vector, 1), this.drawSettings, label);
         cube.setDenseLayer(true);
         return cube;
     }
@@ -859,10 +859,11 @@ class LayerController {
  * User can create layer: Input Layer
  */
 class InputLayer {
-    constructor(x, y, z) {
+    constructor(x, y, z, label) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.label = label;
     }
 }
 
@@ -945,8 +946,9 @@ class ConcatenateLayer {
  */
 
 class DenseLayer {
-    constructor(vector) {
+    constructor(vector, label) {
         this.vector = vector;
+        this.label = label;
     }
 }
 
@@ -960,11 +962,11 @@ class DenseLayer {
  * @returns 
  */
 
-function Input(x, y, z) {
-    if (arguments.length == 3) {
+function Input(x, y, z, label="") {
+    if ((arguments.length == 3) || (arguments.length == 4)) {
         //Only input with positive valid numbers
         if (x > 0 && y > 0 && z > 0) {
-            return new InputLayer(x, y, z);
+            return new InputLayer(x, y, z,label);
         } else {
             throw new Error("The Input layer is poorly defined: (Only positive input numbers.) <p> Example: Input(32,32,20) with 3 arguments.</p>");
         }
@@ -1099,15 +1101,16 @@ function MaxPooling2D(tuple) {
  * Each neuron recieves input from all the neurons in the previous layer, thus densely connected
  *
  * @param {vector} vector 
- * @returns 
+ * @param {label} label
+ * @returns
  */
 
-function Dense(vector) {
-    if (arguments.length == 1) {
+function Dense(vector, label = "") {
+    if ((arguments.length == 1) || (arguments.length == 2)) {
         if (vector <= 0) {
             throw new Error("The Dense layer is poorly defined: (Vector must be a positive number.) <p> Example: Dense(200) with 1 argument.</p>");
         }
-        return new DenseLayer(vector);
+        return new DenseLayer(vector, label);
     }
     throw new Error("The Dense layer is poorly defined: (Invalid number of arguments.) <p> Example: Dense(200) with 1 argument.</p>");
 }
@@ -1409,8 +1412,8 @@ class PointerArrow {
  * Figure to draw the layers of the nodes
  */
 class Cube {
-    constructor$2(coordinates, drawSettings) {
-        this.initializeCube(coordinates, drawSettings);
+    constructor$2(coordinates, drawSettings, label = "") {
+        this.initializeCube(coordinates, drawSettings, label);
     }
     constructor(...args$) {
         switch (args$.length) {
@@ -1418,9 +1421,11 @@ class Cube {
                 return this.constructor$0(...args$);
             case 2:
                 return this.constructor$2(...args$);
+            case 3:
+                return this.constructor$2(...args$);
         }
     }
-    initializeCube(coordinate, drawSettings) {
+    initializeCube(coordinate, drawSettings, label) {
         this.x = coordinate.getX();
         this.y = coordinate.getY();
         this.z = coordinate.getZ();
@@ -1447,6 +1452,7 @@ class Cube {
         //Shortcut CNN
         this.coordinates.push(new Coordinate(0, this.coordinates[0].getY() - 30, 0));
         this.coordinates.push(new Coordinate(0, this.coordinates[0].getY(), 0));
+        this.label = label;
     }
     getX() {
         return this.x;
@@ -1471,6 +1477,9 @@ class Cube {
     }
     setDenseLayer(denseLayer) {
         this.isDenseLayer = denseLayer;
+    }
+    getLabel() {
+        return this.label;
     }
 }
 
@@ -1571,7 +1580,7 @@ class Node {
                     throw new Error('There is already an input layer.');
                 }
             }
-            let inputCube = layerController.Input(new Cube(new Coordinate(input.x, input.y, input.z), layerController.getDrawSettings()));
+            let inputCube = layerController.Input(new Cube(new Coordinate(input.x, input.y, input.z), layerController.getDrawSettings(),input.label));
             this.cubeList.push(inputCube);
             this.setLast();
             this.setActualCube(this.getLastCube());
@@ -1631,7 +1640,7 @@ class Node {
             }
             this.setActualCube(layerController.MaxPooling2D(input.tuple, this.getActualCube()));
         } else if (input instanceof DenseLayer) {
-            let denseCube = layerController.Dense(input.vector);
+            let denseCube = layerController.Dense(input.vector, input.label);
             this.cubeList.push(denseCube);
             this.setLast();
             this.setActualCube(this.getLastCube());
@@ -2072,8 +2081,18 @@ class SvgController {
     drawText(cube) {
         let svg = '';
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '"  x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[6].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[4].getY() + cube.getCoordinates()[6].getY()) / 2 + '\'>' + (cube.getY()) + '</text>\n';
+
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '" x=\'' + ((cube.getCoordinates()[6].getX() + cube.getCoordinates()[7].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[6].getY() + cube.getCoordinates()[7].getY()) / 2 + '\'>' + (cube.getX()) + '</text>\n';
+
         svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '" x=\'' + ((cube.getCoordinates()[4].getX() + cube.getCoordinates()[0].getX()) / 2) + '\' y=\'' + (cube.getCoordinates()[0].getY() + cube.getCoordinates()[4].getY()) / 2 + '\'>' + (cube.getZ()) + '</text>\n';
+
+
+        let max_y = Math.max(cube.getCoordinates()[0].getY(), cube.getCoordinates()[1].getY(), cube.getCoordinates()[2].getY(), cube.getCoordinates()[3].getY(), cube.getCoordinates()[4].getY(), cube.getCoordinates()[5].getY(),
+                       cube.getCoordinates()[6].getY(), cube.getCoordinates()[7].getY(),cube.getCoordinates()[8].getY(),
+                       cube.getCoordinates()[9].getY(), cube.getCoordinates()[10].getY());
+
+        svg += '\t\t<text font-size="' + this.drawSettings.getFont().getFont_size() + '" font-family="' + this.drawSettings.getFont().getFont_family() + '" fill="' + this.drawSettings.getFont().getFont_color() + '" x=\'' + cube.getCoordinates()[4].getX() + '\' y=\'' + (max_y + this.drawSettings.getFont().getFont_size()) + '\'>' + cube.getLabel() + '</text>\n';
+
         return svg;
 
     }
